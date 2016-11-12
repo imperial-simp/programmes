@@ -1,0 +1,102 @@
+[
+    {
+        "oss_code": "ALBERT",
+        "name": "Albert Hall"
+    },
+    {
+        "oss_code": "CH",
+        "name": "Charing Cross"
+    },
+    {
+        "oss_code": "CM",
+        "name": "North West London Hospitals Campus (Central Middlesex site)"
+    },
+    {
+        "oss_code": "CP",
+        "name": "Clayponds"
+    },
+    {
+        "oss_code": "CW",
+        "name": "Chelsea and Westminster"
+    },
+    {
+        "oss_code": "CX",
+        "name": "Charing Cross Campus"
+    },
+    {
+        "oss_code": "EA",
+        "name": "Ealing Hospital"
+    },
+    {
+        "oss_code": "EX",
+        "name": "PRI Institution"
+    },
+    {
+        "oss_code": "HA",
+        "name": "Harlington Sports Ground"
+    },
+    {
+        "oss_code": "HE",
+        "name": "Heston"
+    },
+    {
+        "oss_code": "HH",
+        "name": "Harefield Hospital"
+    },
+    {
+        "oss_code": "HM",
+        "name": "Hammersmith"
+    },
+    {
+        "oss_code": "KR",
+        "name": "Kennedy Institute"
+    },
+    {
+        "oss_code": "NP",
+        "name": "Northwick Park"
+    },
+    {
+        "oss_code": "OT",
+        "name": "Other"
+    },
+    {
+        "oss_code": "PE",
+        "name": "Imperial College Boathouse"
+    },
+    {
+        "oss_code": "PG",
+        "name": "Pembridge Gardens"
+    },
+    {
+        "oss_code": "RB",
+        "name": "Royal Brompton"
+    },
+    {
+        "oss_code": "SK",
+        "name": "South Kensington"
+    },
+    {
+        "oss_code": "SM",
+        "name": "St Mary's"
+    },
+    {
+        "oss_code": "SP",
+        "name": "Silwood Park"
+    },
+    {
+        "oss_code": "TE",
+        "name": "Teddingtion Sports Ground"
+    },
+    {
+        "oss_code": "WC",
+        "name": "White City"
+    },
+    {
+        "oss_code": "WM",
+        "name": "West Middlesex Hospital"
+    },
+    {
+        "oss_code": "WY",
+        "name": "Wye"
+    }
+]

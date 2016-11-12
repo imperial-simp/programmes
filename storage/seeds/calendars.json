@@ -1,0 +1,282 @@
+[
+    {
+        "year": "2016/17",
+        "name": "Academic Year 2016/17",
+        "type": "year",
+        "start_at": "2016-10-01",
+        "end_at": "2017-06-30"
+    },
+    {
+        "year": "2017/18",
+        "name": "Academic Year 2017/18",
+        "type": "year",
+        "start_at": "2017-09-30",
+        "end_at": "2018-06-29"
+    },
+    {
+        "year": "2018/19",
+        "name": "Academic Year 2018/19",
+        "type": "year",
+        "start_at": "2018-09-29",
+        "end_at": "2019-06-28"
+    },
+    {
+        "year": "2019/20",
+        "name": "Academic Year 2019/20",
+        "type": "year",
+        "start_at": "2019-09-28",
+        "end_at": "2020-06-26"
+    },
+    {
+        "year": "2020/21",
+        "name": "Academic Year 2020/21",
+        "type": "year",
+        "start_at": "2020-10-03",
+        "end_at": "2021-06-25"
+    },
+    {
+        "year": "2021/22",
+        "name": "Academic Year 2021/22",
+        "type": "year",
+        "start_at": "2021-10-02",
+        "end_at": "2022-07-01"
+    },
+    {
+        "year": "2022/23",
+        "name": "Academic Year 2022/23",
+        "type": "year",
+        "start_at": "2022-10-01",
+        "end_at": "2023-06-30"
+    },
+    {
+        "year": "2023/24",
+        "name": "Academic Year 2023/24",
+        "type": "year",
+        "start_at": "2023-09-30",
+        "end_at": "2024-06-29"
+    },
+    {
+        "year": "2024/25",
+        "name": "Academic Year 2024/25",
+        "type": "year",
+        "start_at": "2024-09-28",
+        "end_at": "2025-06-27"
+    },
+    {
+        "year": "2025/26",
+        "name": "Academic Year 2025/26",
+        "type": "year",
+        "start_at": "2025-09-27",
+        "end_at": "2026-06-26"
+    },
+    {
+        "year": "2016/17",
+        "name": "Autumn Term 2016/17",
+        "type": "term",
+        "start_at": "2016-10-01",
+        "end_at": "2016-12-16"
+    },
+    {
+        "year": "2016/17",
+        "name": "Spring Term 2016/17",
+        "type": "term",
+        "start_at": "2017-01-07",
+        "end_at": "2017-03-24"
+    },
+    {
+        "year": "2016/17",
+        "name": "Summer Term 2016/17",
+        "type": "term",
+        "start_at": "2017-04-29",
+        "end_at": "2017-06-30"
+    },
+    {
+        "year": "2017/18",
+        "name": "Autumn Term 2017/18",
+        "type": "term",
+        "start_at": "2017-09-30",
+        "end_at": "2017-12-15"
+    },
+    {
+        "year": "2017/18",
+        "name": "Spring Term 2017/18",
+        "type": "term",
+        "start_at": "2018-01-06",
+        "end_at": "2018-03-23"
+    },
+    {
+        "year": "2017/18",
+        "name": "Summer Term 2017/18",
+        "type": "term",
+        "start_at": "2018-04-28",
+        "end_at": "2018-06-29"
+    },
+    {
+        "year": "2018/19",
+        "name": "Autumn Term 2018/19",
+        "type": "term",
+        "start_at": "2018-09-29",
+        "end_at": "2018-12-14"
+    },
+    {
+        "year": "2018/19",
+        "name": "Spring Term 2018/19",
+        "type": "term",
+        "start_at": "2019-01-05",
+        "end_at": "2019-03-22"
+    },
+    {
+        "year": "2018/19",
+        "name": "Summer Term 2018/19",
+        "type": "term",
+        "start_at": "2019-04-27",
+        "end_at": "2019-06-28"
+    },
+    {
+        "year": "2019/20",
+        "name": "Autumn Term 2019/20",
+        "type": "term",
+        "start_at": "2019-09-28",
+        "end_at": "2019-12-13"
+    },
+    {
+        "year": "2019/20",
+        "name": "Spring Term 2019/20",
+        "type": "term",
+        "start_at": "2020-01-04",
+        "end_at": "2020-03-20"
+    },
+    {
+        "year": "2019/20",
+        "name": "Summer Term 2019/20",
+        "type": "term",
+        "start_at": "2020-04-25",
+        "end_at": "2020-06-26"
+    },
+    {
+        "year": "2020/21",
+        "name": "Autumn Term 2020/21",
+        "type": "term",
+        "start_at": "2020-10-03",
+        "end_at": "2020-12-18"
+    },
+    {
+        "year": "2020/21",
+        "name": "Spring Term 2020/21",
+        "type": "term",
+        "start_at": "2021-01-09",
+        "end_at": "2021-03-26"
+    },
+    {
+        "year": "2020/21",
+        "name": "Summer Term 2020/21",
+        "type": "term",
+        "start_at": "2021-04-24",
+        "end_at": "2021-06-25"
+    },
+    {
+        "year": "2021/22",
+        "name": "Autumn Term 2021/22",
+        "type": "term",
+        "start_at": "2021-10-02",
+        "end_at": "2021-12-17"
+    },
+    {
+        "year": "2021/22",
+        "name": "Spring Term 2021/22",
+        "type": "term",
+        "start_at": "2022-01-08",
+        "end_at": "2022-03-25"
+    },
+    {
+        "year": "2021/22",
+        "name": "Summer Term 2021/22",
+        "type": "term",
+        "start_at": "2022-04-30",
+        "end_at": "2022-07-01"
+    },
+    {
+        "year": "2022/23",
+        "name": "Autumn Term 2022/23",
+        "type": "term",
+        "start_at": "2022-10-01",
+        "end_at": "2022-12-16"
+    },
+    {
+        "year": "2022/23",
+        "name": "Spring Term 2022/23",
+        "type": "term",
+        "start_at": "2023-01-07",
+        "end_at": "2023-03-24"
+    },
+    {
+        "year": "2022/23",
+        "name": "Summer Term 2022/23",
+        "type": "term",
+        "start_at": "2023-04-29",
+        "end_at": "2023-06-30"
+    },
+    {
+        "year": "2023/24",
+        "name": "Autumn Term 2023/24",
+        "type": "term",
+        "start_at": "2023-09-30",
+        "end_at": "2023-12-15"
+    },
+    {
+        "year": "2023/24",
+        "name": "Spring Term 2023/24",
+        "type": "term",
+        "start_at": "2024-01-06",
+        "end_at": "2024-03-22"
+    },
+    {
+        "year": "2023/24",
+        "name": "Summer Term 2023/24",
+        "type": "term",
+        "start_at": "2024-04-27",
+        "end_at": "2024-06-29"
+    },
+    {
+        "year": "2024/25",
+        "name": "Autumn Term 2024/25",
+        "type": "term",
+        "start_at": "2024-09-28",
+        "end_at": "2024-12-13"
+    },
+    {
+        "year": "2024/25",
+        "name": "Spring Term 2024/25",
+        "type": "term",
+        "start_at": "2025-01-04",
+        "end_at": "2025-03-21"
+    },
+    {
+        "year": "2024/25",
+        "name": "Summer Term 2024/25",
+        "type": "term",
+        "start_at": "2025-04-26",
+        "end_at": "2025-06-27"
+    },
+    {
+        "year": "2025/26",
+        "name": "Autumn Term 2025/26",
+        "type": "term",
+        "start_at": "2025-09-27",
+        "end_at": "2025-12-12"
+    },
+    {
+        "year": "2025/26",
+        "name": "Spring Term 2025/26",
+        "type": "term",
+        "start_at": "2026-01-03",
+        "end_at": "2026-03-20"
+    },
+    {
+        "year": "2025/26",
+        "name": "Summer Term 2025/26",
+        "type": "term",
+        "start_at": "2026-04-25",
+        "end_at": "2026-06-26"
+    }
+]

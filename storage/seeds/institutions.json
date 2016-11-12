@@ -1,0 +1,183 @@
+[
+    {
+        "name": "Imperial College London",
+        "abbrev": "ICL",
+        "oss_code": "IMPERIAL",
+        "faculties": [
+            {
+                "name": "Faculty of Engineering",
+                "short_name": "Engineering",
+                "oss_code": "ENGINEERING",
+                "abbrev": "FOE",
+                "departments": [
+                    {
+                        "name": "Department of Aeronautics",
+                        "short_name": "Aeronautics",
+                        "oss_code": "AE"
+                    },
+                    {
+                        "name": "Department of Bioengineering",
+                        "short_name": "Bioengineering",
+                        "oss_code": "BE"
+                    },
+                    {
+                        "name": "Department of Chemical Engineering",
+                        "short_name": "Chemical Engineering",
+                        "oss_code": "CE"
+                    },
+                    {
+                        "name": "Department of Civil and Environmental Engineering",
+                        "short_name": "Civil and Environmental Engineering",
+                        "oss_code": "CI"
+                    },
+                    {
+                        "name": "Department of Computing",
+                        "short_name": "Computing",
+                        "oss_code": "CO"
+                    },
+                    {
+                        "name": "Dyson School of Design Engineering",
+                        "short_name": "Design Engineering",
+                        "oss_code": "DE",
+                        "abbrev": "DSDE"
+                    },
+                    {
+                        "name": "Department of Earth Science and Engineering",
+                        "short_name": "Earth Science and Engineering",
+                        "oss_code": "EA"
+                    },
+                    {
+                        "name": "Department of Electrical and Electronic Engineering",
+                        "short_name": "Electrical and Electronic Engineering",
+                        "oss_code": "EE"
+                    },
+                    {
+                        "name": "Department of Materials",
+                        "short_name": "Materials",
+                        "oss_code": "MM"
+                    },
+                    {
+                        "name": "Department of Mechanical Engineering",
+                        "short_name": "Mechanical Engineering",
+                        "oss_code": "ME"
+                    }
+                ]
+            },
+            {
+                "name": "Faculty of Medicine",
+                "short_name": "Medicine",
+                "oss_code": "MEDICINE",
+                "abbrev": "FOM",
+                "departments": [
+                    {
+                        "name": "Department of Medicine",
+                        "abbrev": "DOM"
+                    },
+                    {
+                        "name": "Department of Surgery and Cancer",
+                        "abbrev": "DSC"
+                    },
+                    {
+                        "name": "National Heart and Lung Institute",
+                        "abbrev": "NHLI"
+                    },
+                    {
+                        "name": "School of Medicine",
+                        "abbrev": "SOM"
+                    },
+                    {
+                        "name": "School of Public Health",
+                        "abbrev": "SPH"
+                    }
+                ]
+            },
+            {
+                "name": "Faculty of Natural Sciences",
+                "short_name": "Natural Sciences",
+                "oss_code": "NATURAL SCIENCES",
+                "abbrev": "FONS",
+                "departments": [
+                    {
+                        "name": "Centre for Environmental Policy",
+                        "oss_code": "CEP"
+                    },
+                    {
+                        "name": "Department of Chemistry",
+                        "short_name": "Chemistry",
+                        "oss_code": "CH"
+                    },
+                    {
+                        "name": "Department of Life Sciences",
+                        "short_name": "Life Sciences",
+                        "oss_code": "LS"
+                    },
+                    {
+                        "name": "Department of Mathematics",
+                        "short_name": "Mathematics",
+                        "oss_code": "MA"
+                    },
+                    {
+                        "name": "Department of Physics",
+                        "short_name": "Physics",
+                        "oss_code": "PH"
+                    }
+                ]
+            },
+            {
+                "name": "Imperial College Business School",
+                "short_name": "Business",
+                "oss_code": "BUSINESS",
+                "abbrev": "ICBS",
+                "departments": [
+                    {
+                        "name": "Imperial College Business School",
+                        "short_name": "Business",
+                        "abbrev": "ICBS"
+                    }
+                ]
+            },
+            {
+                "name": "School of Professional Development",
+                "abbrev": "SPD",
+                "departments": [
+                    {
+                        "name": "Centre for Languages, Culture and Communication",
+                        "abbrev": "CLCC"
+                    },
+                    {
+                        "name": "Education Development Unit",
+                        "abbrev": "EDU"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Canterbury Christ Church University",
+        "abbrev": "CCCU",
+        "faculties": [
+            {
+                "name": "Faculty of Education",
+                "short_name": "Education",
+                "departments": [
+                    {
+                        "name": "School of Teacher Education and Development",
+                        "short_name": "Teacher Education and Development"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Institute of Physics",
+        "abbrev": "IOP",
+        "faculties": [
+        ]
+    },
+    {
+        "name": "National College of Teaching and Leadership",
+        "abbrev": "NCTL",
+        "faculties": [
+        ]
+    }
+]

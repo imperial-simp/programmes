@@ -1,0 +1,62 @@
+[
+    {
+        "abbrev": "BEng",
+        "name": "Bachelor of Engineering",
+        "type": "BD"
+    },
+    {
+        "abbrev": "BSc",
+        "name": "Bachelor of Science",
+        "type": "BD"
+    },
+    {
+        "abbrev": "MBA",
+        "name": "Master of Business Administration",
+        "type": "MD"
+    },
+    {
+        "abbrev": "MBBS",
+        "name": "Bachelor of Medicine, Bachelor of Surgery",
+        "type": "BD"
+    },
+    {
+        "abbrev": "MEd",
+        "name": "Master of Education",
+        "type": "MD"
+    },
+    {
+        "abbrev": "MEng",
+        "name": "Master of Engineering",
+        "type": "MD"
+    },
+    {
+        "abbrev": "MPH",
+        "name": "Master of Public Health",
+        "type": "MD"
+    },
+    {
+        "abbrev": "MRes",
+        "name": "Master of Research",
+        "type": "MD"
+    },
+    {
+        "abbrev": "MSc",
+        "name": "Master of Science",
+        "type": "MD"
+    },
+    {
+        "abbrev": "PhD",
+        "name": "Doctor of Philosophy",
+        "type": "DR"
+    },
+    {
+        "abbrev": "PGCert",
+        "name": "Postgraduate Certificate",
+        "type": "PC"
+    },
+    {
+        "abbrev": "PGDip",
+        "name": "Postgraduate Diploma",
+        "type": "PD"
+    }
+]

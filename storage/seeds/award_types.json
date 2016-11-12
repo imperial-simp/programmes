@@ -1,0 +1,56 @@
+[
+    {
+        "abbrev": "BD",
+        "name": "Bachelor's Degree",
+        "fheq": 6,
+        "ehea": 1
+    },
+    {
+        "abbrev": "GD",
+        "name": "Graduate Diploma",
+        "fheq": 6,
+        "ehea": null
+    },
+    {
+        "abbrev": "GC",
+        "name": "Graduate Certificate",
+        "fheq": 6,
+        "ehea": null
+    },
+    {
+        "abbrev": "MD",
+        "name": "Master's Degree",
+        "fheq": 7,
+        "ehea": 2
+    },
+    {
+        "abbrev": "PD",
+        "name": "Postgraduate Diploma",
+        "fheq": 7,
+        "ehea": null
+    },
+    {
+        "abbrev": "PC",
+        "name": "Postgraduate Certificate",
+        "fheq": 7,
+        "ehea": null
+    },
+    {
+        "abbrev": "DR",
+        "name": "Doctorate",
+        "fheq": 8,
+        "ehea": 3
+    },
+    {
+        "abbrev": "AC",
+        "name": "Accreditation",
+        "fheq": null,
+        "ehea": null
+    },
+    {
+        "abbrev": "NA",
+        "name": "Non-Award",
+        "fheq": null,
+        "ehea": null
+    }
+]
