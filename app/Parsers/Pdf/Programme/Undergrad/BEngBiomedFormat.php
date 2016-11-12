@@ -1,10 +1,10 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Pdf\Programme\Postgrad;
+namespace Imperial\Simp\Parsers\Pdf\Programme\Undergrad;
 
 use Imperial\Simp\Parsers\Pdf\Programme\Undergrad\OldFormat as BaseParser;
 
-class OldFormat extends BaseParser
+class BEngBiomedFormat extends BaseParser
 {
     public function read()
     {
@@ -13,6 +13,7 @@ class OldFormat extends BaseParser
 
     public static function identifyParser($text, $details = [])
     {
-        return preg_match('/^Programme Specification \(Master/', $text);
+        return preg_match('/^(BEng Biomedical Engineering)/s', $text);
     }
+
 }

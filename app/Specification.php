@@ -26,6 +26,7 @@ class Specification extends Model
         'details'      => 'json',
         'contents'     => 'json',
         'retrieved_at' => 'datetime',
+        'parsed_at' => 'datetime',
     ];
 
     public function retrieve($mime = null, $etag = null)
@@ -86,32 +87,49 @@ class Specification extends Model
         return $this->belongsTo(Calendar::class);
     }
 
+    public function parse()
+    {
+        $parser = $this->getParser();
+        $this->contents = $parser->read();
+        $this->parsed_at = $this->freshTimestamp();
+        $this->save();
+    }
+
     public function getParser()
     {
         if ($this->mime == 'application/pdf') {
             $loader = PdfLoader::load($this->path);
         }
-        // elseif ($this->mime == 'text/html') {
-            // $loader = HtmlLoader::load($this->path);
-        // }
+        elseif ($this->mime == 'text/html') {
+        $loader = HtmlLoader::load($this->path);
+        }
         else {
             throw new Exception(sprintf('Cannot identify parser for MIME type %s.', $this->mime));
         }
 
         if ($this->parser) {
             $parser = $this->parser;
-            return new $parser($this, $loader->getText(), $loader->getDetails());
+            if (class_exists($parser)) {
+                if ($parser::identify($loader->getText(), $loader->getDetails())) {
+                    return new $parser($this, $loader->getText(), $loader->getDetails());
+                }
+            }
         }
 
         $parsers = $loader->parsers();
 
-        foreach ($parsers as $class) {
-            if ($class::identify($loader->getText(), $loader->getDetails())) {
-                $this->parser = $class;
-                $this->save();
-                return new $class($this, $loader->getText(), $loader->getDetails());
+        foreach ($parsers as $parser) {
+            if (class_exists($parser)) {
+                if ($parser::identify($loader->getText(), $loader->getDetails())) {
+                    $this->parser = $parser;
+                    $this->save();
+                    return new $parser($this, $loader->getText(), $loader->getDetails());
+                }
             }
         }
+
+        $this->parser = null;
+        $this->save();
 
         throw new Exception(sprintf('Cannot identify parser for specification [%s].', $this->id));
     }

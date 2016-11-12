@@ -2,15 +2,15 @@
 
 namespace Imperial\Simp\Loaders;
 
-class PdfLoader extends AbstractLoader
+use Storage;
+
+class HtmlLoader extends AbstractLoader
 {
 
     public function loadPath($path)
     {
-        $this->path = storage_path('app/'.$path);
-        $pdf = app('parser.pdf')->parseFile($this->path);
-        $this->setDetails($pdf->getDetails());
-        $this->setText($this->tidyText($pdf->getText()));
+        $html = Storage::get($>path);
+        $this->setText($html);
     }
 
     public function tidyText($text)
