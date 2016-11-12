@@ -71,10 +71,12 @@
                 "departments": [
                     {
                         "name": "Department of Medicine",
+                        "short_name": "Medicine",
                         "abbrev": "DOM"
                     },
                     {
                         "name": "Department of Surgery and Cancer",
+                        "short_name": "Surgery and Cancer",
                         "abbrev": "DSC"
                     },
                     {
@@ -82,8 +84,9 @@
                         "abbrev": "NHLI"
                     },
                     {
-                        "name": "School of Medicine",
-                        "abbrev": "SOM"
+                        "name": "Lee Kong Chian School of Medicine",
+                        "short_name": "School of Medicine",
+                        "abbrev": "LKCSM"
                     },
                     {
                         "name": "School of Public Health",
@@ -147,6 +150,18 @@
                     {
                         "name": "Education Development Unit",
                         "abbrev": "EDU"
+                    },
+                    {
+                        "name": "Science Communication Unit",
+                        "abbrev": "SCU"
+                    }
+                ]
+            },
+            {
+                "name": "Administration and Support Services",
+                "departments": [
+                    {
+                        "name": "Student Recruitment and Outreach"
                     }
                 ]
             }
@@ -177,6 +192,12 @@
     {
         "name": "National College of Teaching and Leadership",
         "abbrev": "NCTL",
+        "faculties": [
+        ]
+    },
+    {
+        "name": "Nanyang Technological University",
+        "abbrev": "NTU",
         "faculties": [
         ]
     }

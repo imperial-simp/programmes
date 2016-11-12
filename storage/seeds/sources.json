@@ -1,0 +1,17 @@
+[
+    {
+        "name": "pg-courses",
+        "url": "http://www.imperial.ac.uk/study/pg/courses/",
+        "client": "Imperial\\Simp\\Clients\\CourseListClient"
+    },
+    {
+        "name": "ug-courses",
+        "url": "http://www.imperial.ac.uk/study/ug/courses/",
+        "client": "Imperial\\Simp\\Clients\\CourseListClient"
+    },
+    {
+        "name": "qa-pdf",
+        "url": "https://www.imperial.ac.uk/staff/tools-and-reference/quality-assurance-enhancement/programme-information/programme-specifications/",
+        "client": "Imperial\\Simp\\Clients\\SpecificationClient"
+    }
+]

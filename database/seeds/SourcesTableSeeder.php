@@ -15,7 +15,7 @@ class SourcesTableSeeder extends AbstractJsonTableSeeder
 
         foreach ($sources as $source) {
 
-            $SourceModel = Source::updateOrCreate([
+            $sourceModel = Source::updateOrCreate([
                 'url' => $source['url'],
             ], $source);
         }

@@ -13,4 +13,9 @@ class Campus extends Model
         'oss_code',
         'banner_code',
     ];
+
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
 }

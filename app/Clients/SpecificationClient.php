@@ -7,6 +7,7 @@ use Imperial\Simp\Institution;
 use Imperial\Simp\Faculty;
 use Imperial\Simp\Department;
 use Imperial\Simp\Award;
+use Imperial\Simp\Calendar;
 
 use Imperial\Simp\Jobs\DownloadSpecificationJob;
 use InvalidArgumentException;
@@ -18,21 +19,15 @@ class SpecificationClient extends AbstractClient
     protected $level;
     protected $entries = [];
 
-    protected $sourceModel;
+    protected $calendarModel;
     protected $institutionModel;
     protected $facultyModel;
     protected $departmentModel;
-
-    public function getUrl()
-    {
-        return 'https://www.imperial.ac.uk/staff/tools-and-reference/quality-assurance-enhancement/programme-information/programme-specifications/';
-    }
 
     public function run()
     {
         $this->get();
 
-        $this->sourceModel = Source::firstOrCreate(['url' => $this->getUrl(), 'client' => self::class]);
         $this->institutionModel = Institution::whereName('Imperial College London')->first();
 
         $this->crawler->filter('.module .fake-h3')->each(function($node) { $this->getFaculty($node); });
@@ -90,15 +85,28 @@ class SpecificationClient extends AbstractClient
 
         if ($title != 'N/A') {
 
-            $award = explode(' ', $title);
+            $awards = explode(' ', $title);
 
-            if (last($award) == 'MBA') {
+            if (last($awards) == 'MBA') {
                 $award = 'MBA';
             }
             else {
-                $award = head($award);
+                $award = array_shift($awards);
+
+                if ('PG' == $award) {
+                    $award .= array_shift($awards);
+                }
+
                 $award = str_replace('MSci', 'MSc', $award);
             }
+
+            if (stripos($award, '/') !== false) {
+                $award = explode('/', $award);
+            }
+
+            $entryYear = @$this->entries[$i];
+
+            $this->calendarModel = Calendar::where('year', 'LIKE', strstr($entryYear, '/', true).'/%')->where('type', 'year')->first();
 
             $details = [
                 'faculty'    => $this->faculty,
@@ -106,7 +114,7 @@ class SpecificationClient extends AbstractClient
                 'level'      => $this->level,
                 'title'      => $title,
                 'award'      => $award,
-                'entry_year' => @$this->entries[$i],
+                'entry_year' => $entryYear,
             ];
 
             $hash = md5(json_encode($details));
@@ -135,8 +143,24 @@ class SpecificationClient extends AbstractClient
                 $specification->department()->associate($this->departmentModel);
             }
 
-            if ($awardModel = Award::where('abbrev', $award)->first()) {
-                $specification->award()->associate($awardModel);
+            if (is_array($award)) {
+                if ($awardModel = Award::where('abbrev', array_shift($award))->first()) {
+                    $specification->award()->associate($awardModel);
+                }
+
+                if ($awardModel = Award::where('abbrev', array_shift($award))->first()) {
+                    $specification->jointAward()->associate($awardModel);
+                }
+            }
+            else {
+                if ($awardModel = Award::where('abbrev', $award)->first()) {
+                    $specification->award()->associate($awardModel);
+                }
+            }
+
+
+            if ($this->calendarModel) {
+                $specification->calendar()->associate($this->calendarModel);
             }
 
             if (!$specification->url) {

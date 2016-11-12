@@ -19,7 +19,7 @@ class CreateSourcesTable extends Migration
             $table->string('title')->nullable();
             $table->string('url')->nullable();
             $table->string('client')->nullable();
-            $table->string('etag')->unique()->nullable();
+            $table->string('etag')->nullable();
             $table->timestamp('retrieved_at')->nullable();
             $table->timestamps();
         });

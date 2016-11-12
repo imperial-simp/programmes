@@ -11,26 +11,17 @@
 |
 */
 
-Artisan::command('specs:retrieve {source}', function ($source) {
+Artisan::command('specs:retrieve {source?}', function ($source = null) {
 
-    $client = new Imperial\Simp\Clients\SpecificationClient;
+    if ($source) {
+        $clients = Imperial\Simp\Source::whereIn('name', explode(',', $source))->get();
+    }
+    else {
+        $clients = Imperial\Simp\Source::get();
+    }
 
-    $client->run();
+    foreach ($clients as $client) {
+        $client->run();
+    }
 
 })->describe('Retrieve the list of programme specifications.');
-
-Artisan::command('specs:sniff', function () {
-
-$specification = Imperial\Simp\Specification::find(1696);
-dd($specification->file, $specification->path);
-
-    // $client = new GuzzleHttp\Client();
-    //
-    // $request = $client->get('https://www.imperial.ac.uk/media/imperial-college/study/programme-specifications/life-sciences/BSc-Biochem-w-Mgmt-w-YInd_Res.pdf');
-    //
-    // $contents = $request->getBody();
-    // $mime = $request->getHeader('ETag');
-    //
-    // dd($mime);
-
-});

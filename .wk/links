@@ -1,2 +1,4 @@
-http://www.imperial.ac.uk/study/pg/courses/
-http://www.imperial.ac.uk/study/ug/courses/
+name,url
+pg-courses,http://www.imperial.ac.uk/study/pg/courses/
+ug-courses,http://www.imperial.ac.uk/study/ug/courses/
+qa-pdf,https://www.imperial.ac.uk/staff/tools-and-reference/quality-assurance-enhancement/programme-information/programme-specifications/

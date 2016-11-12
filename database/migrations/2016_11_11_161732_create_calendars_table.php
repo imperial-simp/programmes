@@ -22,7 +22,10 @@ class CreateCalendarsTable extends Migration
             $table->dateTime('end_at')->nullable();
             $table->string('oss_code')->nullable();
             $table->string('banner_code')->nullable();
+            $table->unsignedInteger('institution_id')->nullable();
             $table->timestamps();
+            
+            $table->foreign('institution_id')->references('id')->on('institutions');
         });
     }
 

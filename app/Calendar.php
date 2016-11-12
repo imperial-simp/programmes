@@ -17,4 +17,9 @@ class Calendar extends Model
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];
+
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
 }

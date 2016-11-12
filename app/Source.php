@@ -17,7 +17,7 @@ class Source extends Model
         'retrieved_at' => 'datetime',
     ];
 
-    public function retrieve($etag)
+    public function retrieve($etag = null)
     {
         $this->etag = $etag;
         $this->retrieved_at = $this->freshTimestamp();
@@ -32,5 +32,14 @@ class Source extends Model
     public function specifications()
     {
         return $this->hasMany(Specification::class);
+    }
+
+    public function run()
+    {
+        $client = $this->client;
+
+        $client = new $client($this);
+
+        return $client->run();
     }
 }

@@ -17,10 +17,10 @@ class CreateSpecificationsTable extends Migration
             $table->increments('id');
             $table->string('title')->nullable();
             $table->string('file')->nullable()->unique();
-            $table->string('mime')->default('text/plain');
+            $table->string('mime')->nullable();
             $table->string('url')->nullable();
             $table->string('hash')->unique();
-            $table->string('etag')->unique()->nullable();
+            $table->string('etag')->nullable();
             $table->string('parser')->nullable();
             $table->text('details')->nullable();
             $table->text('contents')->nullable();
@@ -30,6 +30,8 @@ class CreateSpecificationsTable extends Migration
             $table->unsignedInteger('faculty_id')->nullable();
             $table->unsignedInteger('department_id')->nullable();
             $table->unsignedInteger('award_id')->nullable();
+            $table->unsignedInteger('calendar_id')->nullable();
+            $table->unsignedInteger('joint_award_id')->nullable();
             $table->timestamps();
 
             $table->foreign('source_id')->references('id')->on('sources');
@@ -37,6 +39,8 @@ class CreateSpecificationsTable extends Migration
             $table->foreign('faculty_id')->references('id')->on('faculties');
             $table->foreign('department_id')->references('id')->on('departments');
             $table->foreign('award_id')->references('id')->on('awards');
+            $table->foreign('calendar_id')->references('id')->on('calendars');
+            $table->foreign('joint_award_id')->references('id')->on('award');
         });
     }
 

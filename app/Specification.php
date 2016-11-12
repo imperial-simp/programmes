@@ -24,7 +24,7 @@ class Specification extends Model
         'retrieved_at' => 'datetime',
     ];
 
-    public function retrieve($mime, $etag)
+    public function retrieve($mime = null, $etag = null)
     {
         $this->mime = $mime;
         $this->etag = $etag;
@@ -70,5 +70,15 @@ class Specification extends Model
     public function award()
     {
         return $this->belongsTo(Award::class);
+    }
+
+    public function jointAward()
+    {
+        return $this->belongsTo(Award::class, 'joint_award_id');
+    }
+
+    public function calendar()
+    {
+        return $this->belongsTo(Calendar::class);
     }
 }

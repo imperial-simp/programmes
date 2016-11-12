@@ -35,6 +35,11 @@
         "type": "MD"
     },
     {
+        "abbrev": "MA",
+        "name": "Master of Arts",
+        "type": "MD"
+    },
+    {
         "abbrev": "MRes",
         "name": "Master of Research",
         "type": "MD"
@@ -52,6 +57,11 @@
     {
         "abbrev": "PGCert",
         "name": "Postgraduate Certificate",
+        "type": "PC"
+    },
+    {
+        "abbrev": "PGCE",
+        "name": "Postgraduate Certificate in Education",
         "type": "PC"
     },
     {
