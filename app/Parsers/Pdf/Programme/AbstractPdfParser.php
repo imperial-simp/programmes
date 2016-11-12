@@ -52,8 +52,7 @@ abstract class AbstractPdfParser extends BaseParser
                     }
                 }
 
-                if (preg_match('#^('.$sectionHeading.')(.*)$#i', $line, $matches)) {
-
+                if ($sectionHeading && preg_match('#^('.$sectionHeading.')(.*)$#i', $line, $matches)) {
                     if ($lastHeading) {
                         $sections[$this->slug($lastHeading)] = $buffer;
                         $buffer = [];

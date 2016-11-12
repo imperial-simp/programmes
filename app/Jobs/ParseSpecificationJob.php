@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Imperial\Simp\Specification;
+use Storage;
 
 class ParseSpecificationJob implements ShouldQueue
 {
@@ -33,5 +34,7 @@ class ParseSpecificationJob implements ShouldQueue
     public function handle()
     {
         $this->specification->parse();
+        $contents = json_encode($this->specification->contents, JSON_PRETTY_PRINT);
+        Storage::put('specs/json/'.$this->specification->file.'.json', $contents);
     }
 }

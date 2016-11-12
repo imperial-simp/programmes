@@ -26,7 +26,7 @@ class Specification extends Model
         'details'      => 'json',
         'contents'     => 'json',
         'retrieved_at' => 'datetime',
-        'parsed_at' => 'datetime',
+        'parsed_at'    => 'datetime',
     ];
 
     public function retrieve($mime = null, $etag = null)

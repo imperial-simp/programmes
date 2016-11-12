@@ -12,7 +12,7 @@ class OldFormat extends BaseParser
 
     public static function identifyParser($text, $details = [])
     {
-        return preg_match('/^Programme Specification \(Undergraduate\)/', $text);
+        return preg_match('/^Programme Specification \(Undergraduate\).*(% Year Weighting)/', $text);
     }
 
     public function getSections()
@@ -99,9 +99,45 @@ class OldFormat extends BaseParser
         ];
     }
 
-    public function readSupportingInformationSection()
+    public function readSupportingInformationSection($lines)
     {
 
+        $info = [];
+        $unknown = [];
+
+        foreach ($lines as &$line) {
+            $line = trim($line);
+
+            if (preg_match('/( (at|see): )?(http:|www\.)/', $line)) {
+                $line = preg_replace('/^The ((College|programme)\'s |programme is consistent with the )?/', '', $line);
+                $line = preg_replace('/((which )?(can be found|is( available)?) at| see):/', '__AT__', $line);
+
+                $line = explode('__AT__', $line);
+
+                $line = array_map('trim', $line);
+
+                 if (count($line) == 2) {
+                    $info[$this->slug($line[0])] = $line[1];
+                }
+                else {
+                    $info[] = implode(PHP_EOL, $line);
+                }
+
+            }
+            else {
+                $unknown[] = $line;
+            }
+        }
+
+        $return = [
+            'Links' => $info,
+        ];
+
+        if (count($unknown)) {
+            $return['Other'] = $unknown;
+        }
+
+        return $return;
     }
 
     public function readTotalCreditsField($value)
@@ -144,12 +180,28 @@ class OldFormat extends BaseParser
 
         $unknown = array_filter(explode(PHP_EOL, $unknown));
 
+        $notes = [];
+
+        foreach ($unknown as $id => $line) {
+            if (preg_match('/^(\*+)(.*)$/', $line, $matches)) {
+                $notes[] = [
+                    'Marker' => $matches[1],
+                    'Note'   => $matches[2],
+                ];
+                unset($unknown[$id]);
+            }
+        }
+
         $return = [
             'Modules' => $modules,
         ];
 
         if (!empty($unknown)) {
             $return['Unknown'] = $unknown;
+        }
+
+        if (!empty($notes)) {
+            $return['Notes'] = $notes;
         }
 
         return $return;
@@ -296,7 +348,7 @@ class OldFormat extends BaseParser
         unset($year);
 
         foreach ($unknown as $year => &$modules) {
-            $modules = trim($modules);
+            $modules = array_filter(explode(PHP_EOL, trim($modules)));
         }
 
         unset($modules);
