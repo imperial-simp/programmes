@@ -7,7 +7,7 @@ use Imperial\Simp\Specification;
 abstract class AbstractParser
 {
     protected $specification;
-    protected $lines = [];
+    protected $text;
     protected $details = [];
     protected $output = [];
 
@@ -17,17 +17,17 @@ abstract class AbstractParser
         $this->load();
     }
 
-    public function setText($text)
+    protected function setText($text)
     {
-        $this->lines = $this->tidyText($text);
+        $this->text = $this->tidyText($text);
     }
 
-    public function setDetails(array $details)
+    protected function setDetails(array $details)
     {
         $this->details = $details;
     }
 
-    public function tidyText($text)
+    protected function tidyText($text)
     {
         return $text;
     }
@@ -43,7 +43,7 @@ abstract class AbstractParser
 
     abstract public static function identifyParser($text, $details = []);
 
-    abstract public function load();
+    abstract protected function load();
 
     public function read()
     {
