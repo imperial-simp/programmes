@@ -1,21 +1,21 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Programme\Postgrad\NewFormat;
+namespace Imperial\Simp\Parsers\Programme\Undergrad\OldFormat;
 
-use Imperial\Simp\Parsers\Programme\Postgrad\OldFormat\Parser as OldFormat;
+use Imperial\Simp\Parsers\Programme\AbstractPdfParser as BaseParser;
 
-class Parser extends OldFormat
+class Parser extends BaseParser
 {
     public function read()
     {
         return $this;
     }
-    
+
     public static function identifyParser($text, $details = [])
     {
-        return parent::identifyParser($text) && preg_match('/(Assessment Dates & Deadlines).*(Indicative Module List)/s', $text);
+        return preg_match('/^Programme Specification \(Undergraduate\)/', $text);
     }
-    
+
     public function getSections()
     {
         return [
@@ -26,12 +26,11 @@ class Parser extends OldFormat
             'Entry Requirements',
             'Learning & Teaching Strategy',
             'Assessment Strategy',
-            'Programme Structure',
-            'Assessment Dates & Deadlines',
-            'Assessment Structure.*',
-            'Indicative Module List',
+            'Assessment Structure',
+            'Module Weighting',
+            '(Indicative )?Module List',
             'Supporting Information',
         ];
     }
-    
+
 }

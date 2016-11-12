@@ -1,13 +1,23 @@
 <?php
 
-namespace Imperial\Simp\Parsers;
+namespace Imperial\Simp\Parsers\Programme;
 
-abstract class GenericParser
+use Imperial\Simp\Parsers\AbstractPdfParser as BaseParser;
+
+abstract class AbstractPdfParser extends BaseParser
 {
-    protected $lines;
-    protected $output = [];
-    
-    public function __construct($text)
+    public function read()
+    {
+        // TODO
+        return $this;
+    }
+
+    public static function identifyParser($text, $details = [])
+    {
+        return preg_match('/^Programme Specification/', $text);
+    }
+
+    public function tidyText($text)
     {
         $replacements = [
             '/ \./' => '.',
@@ -30,9 +40,9 @@ abstract class GenericParser
             '/^This document provides a definitive record.*$/m' => '',
             '/^((?:Year (?:One|Two|Three|Four|Five|Six|\d))|(?:First|1st|Second|2nd|Third|3rd|Fourth|Fifth|Sixth|[4-6]th|Final) Year) ([\d\.]+%) /m' => '$1 $2'.PHP_EOL,
         ];
-        
+
         $text = preg_replace(array_keys($replacements), array_values($replacements), $text);
-        
+
         $headerReplacements = [
             'Code Title Core/ Elective Year L&T Hours Ind. Study Hours Place-? ment Hours Total Hours % Written Exam % Course-? work % Practical FHEQ Level ECTS' =>
             'Module Table Header',
@@ -40,33 +50,14 @@ abstract class GenericParser
             'Year % Year Weighting Module % Module Weighting' => 'Module Weighting',
             'Module % Module Weighting' => 'Module Weighting',
         ];
-        
+
         foreach ($headerReplacements as $headerFind => $headerReplace) {
             $text = preg_replace('#'.str_replace(' ', '\s*', $headerFind).'#m', $headerReplace, $text);
         }
-        
-        $this->lines = explode(PHP_EOL, $text);
+
+        return $text;
     }
-    
-    public static function identify($text, $details)
-    {
-        if (is_array($text)) {
-            $text = implode(PHP_EOL, $text);
-        }
-        
-        return static::identifyParser($text, $details);
-    }
-    
-    abstract public static function identifyParser($text, $details = []);
-    
-    public function read()
-    {
-        return $this;
-    }
-    
-    public function output()
-    {
-        return $this->output;
-    }
-    
+
+    abstract function getSections();
+
 }

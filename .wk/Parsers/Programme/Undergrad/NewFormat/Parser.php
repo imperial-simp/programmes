@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Parsers\Programme\Undergrad\NewFormat;
+namespace Imperial\Simp\Parsers\Programme\Undergrad\NewFormat;
 
-use App\Parsers\Programme\Undergrad\OldFormat\Parser as OldFormat;
+use Imperial\Simp\Parsers\Programme\Undergrad\OldFormat\Parser as OldFormat;
 
 class Parser extends OldFormat
 {

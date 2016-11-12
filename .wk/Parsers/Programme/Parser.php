@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Parsers\Programme;
+namespace Imperial\Simp\Parsers\Programme;
 
-use App\Parsers\GenericParser;
+use Imperial\Simp\Parsers\GenericParser;
 
 abstract class Parser extends GenericParser
 {

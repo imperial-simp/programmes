@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Parsers\Programme\Undergrad\OldFormat;
+namespace Imperial\Simp\Parsers\Programme\Undergrad\OldFormat;
 
-use App\Parsers\Programme\Parser as ProgrammeParser;
+use Imperial\Simp\Parsers\Programme\Parser as ProgrammeParser;
 
 class Parser extends ProgrammeParser
 {

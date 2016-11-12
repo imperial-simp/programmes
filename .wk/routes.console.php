@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\PdfParserJob;
+use Imperial\Simp\Jobs\PdfParserJob;
 
 /*
 |--------------------------------------------------------------------------
@@ -147,7 +147,7 @@ Artisan::command('parse:pdf {path}', function ($path) {
         ],
     ];
 
-    $parsers = array_dot($parsers, '\App\Parsers\\');
+    $parsers = array_dot($parsers, '\Imperial\Simp\Parsers\\');
 
     foreach ($parsers as $namespace => $class) {
         $class = str_replace('.', '\\', $namespace.'\\'.$class);
