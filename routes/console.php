@@ -27,8 +27,8 @@ Artisan::command('specs:retrieve {source?}', function ($source = null) {
 })->describe('Retrieve the list of specifications from online sources.');
 
 Artisan::command('specs:parse {id}', function ($id) {
-    $spec = Imperial\Simp\Specification::findOrFail($id);
-    $parser = $spec->getParser();
-    dd(get_class($parser));
+    $specification = Imperial\Simp\Specification::findOrFail($id);
+
+    dispatch(new Imperial\Simp\Jobs\ParseSpecificationJob($specification));
 
 })->describe('Parse a specification file.');

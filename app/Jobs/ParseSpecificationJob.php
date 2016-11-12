@@ -32,6 +32,6 @@ class ParseSpecificationJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->specification()->parse();
+        $this->specification->parse();
     }
 }

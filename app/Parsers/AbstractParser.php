@@ -11,7 +11,6 @@ abstract class AbstractParser
     protected $specification;
     protected $text;
     protected $details = [];
-    protected $output = [];
 
     public function __construct(Specification $specification, $text, array $details)
     {
@@ -53,7 +52,27 @@ abstract class AbstractParser
 
     public function output()
     {
-        return $this->output;
+        return $this->lines;
+    }
+
+    protected function slug($title)
+    {
+        $title = preg_replace(['/ ?& ?/', '% ?[/|] ?%'], [' and ', ' or '], $title);
+
+        $title = \Illuminate\Support\Str::ascii($title);
+        $title = preg_replace('![^\pL\pN\s]+!u', '', $title);
+        $title = ucwords($title);
+        $title = preg_replace('![\s]+!u', '_', $title);
+
+        // $smallWords = ['Of', 'And', 'The', 'An?', 'For', 'By', 'With', 'To', 'Or'];
+        //
+        // foreach ($smallWords as $word) {
+        //     $title = preg_replace('/_('.$word.')_/', '_'.strtolower($word).'_', $title);
+        // }
+
+        $title = str_replace('Elearning', 'eLearning', $title);
+
+        return trim($title, '_');
     }
 
 }

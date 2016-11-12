@@ -25,6 +25,7 @@ class CreateSpecificationsTable extends Migration
             $table->text('details')->nullable();
             $table->text('contents')->nullable();
             $table->timestamp('retrieved_at')->nullable();
+            $table->timestamp('parsed_at')->nullable();
             $table->unsignedInteger('source_id')->nullable();
             $table->unsignedInteger('institution_id')->nullable();
             $table->unsignedInteger('faculty_id')->nullable();

@@ -42,6 +42,11 @@ class Specification extends Model
         return $this->url && is_null($this->retrieved_at);
     }
 
+    public function shouldParse()
+    {
+        return !is_null($this->retrieved_at) && is_null($this->parsed_at);
+    }
+
     public function getPathAttribute()
     {
         return 'specs/'.$this->extension.'/'.$this->file;
@@ -90,7 +95,7 @@ class Specification extends Model
     public function parse()
     {
         $parser = $this->getParser();
-        $this->contents = $parser->read();
+        $this->contents = $parser->read()->output();
         $this->parsed_at = $this->freshTimestamp();
         $this->save();
     }

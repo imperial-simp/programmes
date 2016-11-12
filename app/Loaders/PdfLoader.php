@@ -22,12 +22,19 @@ class PdfLoader extends AbstractLoader
             '/(\x{2022} .*)\n([a-z])/um' => '$1 $2',
             '/\x{2019}/u' => '\'',
             '/\x{2013}/u' => '-',
-            '/ {2,}/' => ' ',
             '/ ([,-])/' => '$1',
             '/\n([a-z])/' => '$1',
             '/ (and|in|or|of|to|with|at|the|an?|for|including|by|using|according|prior|ensure|within|if|do|did|is|has) ?$\n/m' => ' $1 ',
+            '/\( ?$\n/m' => '(',
+            '/\n^\(/m' => '(',
+            '/ \)/' => ')',
             '/\n^(\([A-Z]+\))/m' => '$1',
             '/(([A-Z])[a-z]+)\s+(([A-Z])[a-z]+) \(([A-Z]*\2\4)\)/m' => '$1 $3 ($5)',
+            '/ {2,}/' => ' ',
+            '/^\s+$/m' => '',
+            '/%+/' => '%',
+            '/\( /' => '(',
+            '%(?<!http://)www\.%s' => 'http://www.',
         ];
 
         $text = preg_replace(array_keys($replacements), array_values($replacements), $text);
