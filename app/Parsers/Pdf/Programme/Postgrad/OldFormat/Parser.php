@@ -1,8 +1,8 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Programme\Postgrad\OldFormat;
+namespace Imperial\Simp\Parsers\Pdf\Programme\Postgrad\OldFormat;
 
-use Imperial\Simp\Parsers\Programme\Undergrad\NewFormat\Parser as BaseParser;
+use Imperial\Simp\Parsers\Pdf\Programme\Undergrad\NewFormat\Parser as BaseParser;
 
 class Parser extends BaseParser
 {

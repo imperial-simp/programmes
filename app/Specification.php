@@ -81,4 +81,42 @@ class Specification extends Model
     {
         return $this->belongsTo(Calendar::class);
     }
+
+    public function identifyParser()
+    {
+        $parsers = [
+            'Pdf' => [
+                'Programme' => [
+                    'Postgrad' => [
+                        'MEdFormat' => 'Parser',
+                        'NewFormat' => 'Parser',
+                        'OldFormat' => 'Parser',
+                    ],
+                    'Undergrad' => [
+                        'NewFormat' => 'Parser',
+                        'OldFormat' => 'Parser',
+                    ],
+                ],
+                'Module' => [
+                    'Module' => [
+                        'NewFormat' => 'Parser',
+                    ],
+                    'Project' => [
+                        'NewFormat' => 'Parser',
+                    ],
+                ],
+            ],
+        ];
+
+        $parsers = array_dot($parsers, '\Imperial\Simp\Parsers\\');
+
+        foreach ($parsers as $namespace => $class) {
+            $class = str_replace('.', '\\', $namespace.'\\'.$class);
+
+            if ($class::identify($text, $details)) {
+                $parser = new $class($text);
+                break;
+            }
+        }
+    }
 }

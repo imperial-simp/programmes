@@ -18,4 +18,11 @@ abstract class AbstractHtmlParser extends AbstractParser
         // $this->setDetails(TODO);
     }
 
+    public function getParsers()
+    {
+        return [
+            //  'Html' TODO
+        ];
+    }
+
 }

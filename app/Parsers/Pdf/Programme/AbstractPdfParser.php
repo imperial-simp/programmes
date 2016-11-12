@@ -1,6 +1,6 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Programme;
+namespace Imperial\Simp\Parsers\Pdf\Programme;
 
 use Imperial\Simp\Parsers\AbstractPdfParser as BaseParser;
 
