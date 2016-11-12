@@ -25,12 +25,14 @@ class CreateSpecificationsTable extends Migration
             $table->text('details')->nullable();
             $table->text('contents')->nullable();
             $table->timestamp('retrieved_at')->nullable();
+            $table->unsignedInteger('source_id')->nullable();
             $table->unsignedInteger('institution_id')->nullable();
             $table->unsignedInteger('faculty_id')->nullable();
             $table->unsignedInteger('department_id')->nullable();
             $table->unsignedInteger('award_id')->nullable();
             $table->timestamps();
 
+            $table->foreign('source_id')->references('id')->on('sources');
             $table->foreign('institution_id')->references('id')->on('institutions');
             $table->foreign('faculty_id')->references('id')->on('faculties');
             $table->foreign('department_id')->references('id')->on('departments');

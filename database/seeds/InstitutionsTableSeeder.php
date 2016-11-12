@@ -1,12 +1,10 @@
 <?php
 
-use Illuminate\Database\Seeder;
-
 use Imperial\Simp\Institution;
 use Imperial\Simp\Faculty;
 use Imperial\Simp\Department;
 
-class InstitutionsTableSeeder extends Seeder
+class InstitutionsTableSeeder extends AbstractJsonTableSeeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +13,7 @@ class InstitutionsTableSeeder extends Seeder
      */
     public function run()
     {
-        $institutions = json_decode(Storage::get('lists/institutions.json'), true);
+        $institutions = $this->data('institutions');
 
         foreach ($institutions as $institution) {
 

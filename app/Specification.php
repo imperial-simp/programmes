@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Specification extends Model
 {
     protected $fillable = [
+        'title',
         'file',
         'mime',
         'etag',
@@ -26,7 +27,7 @@ class Specification extends Model
     public function retrieve($mime, $etag)
     {
         $this->mime = $mime;
-        $this->etag = md5($this->url).$etag;
+        $this->etag = $etag;
         $this->retrieved_at = $this->freshTimestamp();
         $this->save();
     }
@@ -44,6 +45,11 @@ class Specification extends Model
     public function getExtensionAttribute()
     {
         return last(explode('.', $this->file)) ?: 'html';
+    }
+
+    public function source()
+    {
+        return $this->belongsTo(Source::class);
     }
 
     public function institution()

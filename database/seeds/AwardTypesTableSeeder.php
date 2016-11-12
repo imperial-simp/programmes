@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
-
 use Imperial\Simp\AwardType;
 
-class AwardTypesTableSeeder extends Seeder
+class AwardTypesTableSeeder extends AbstractJsonTableSeeder
 {
     /**
      * Run the database seeds.
@@ -13,7 +11,7 @@ class AwardTypesTableSeeder extends Seeder
      */
     public function run()
     {
-        $award_types = json_decode(Storage::get('lists/award_types.json'), true);
+        $award_types = $this->data('award_types');
 
         foreach ($award_types as $award_type) {
 

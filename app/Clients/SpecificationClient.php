@@ -18,6 +18,7 @@ class SpecificationClient extends AbstractClient
     protected $level;
     protected $entries = [];
 
+    protected $sourceModel;
     protected $institutionModel;
     protected $facultyModel;
     protected $departmentModel;
@@ -31,6 +32,7 @@ class SpecificationClient extends AbstractClient
     {
         $this->get();
 
+        $this->sourceModel = Source::firstOrCreate(['url' => $this->getUrl(), 'client' => self::class]);
         $this->institutionModel = Institution::whereName('Imperial College London')->first();
 
         $this->crawler->filter('.module .fake-h3')->each(function($node) { $this->getFaculty($node); });
@@ -117,21 +119,27 @@ class SpecificationClient extends AbstractClient
                 $specification->details = $details;
             }
 
+            if ($this->sourceModel) {
+                $specification->source()->associate($this->sourceModel);
+            }
+
             if ($this->institutionModel) {
                 $specification->institution()->associate($this->institutionModel);
             }
+
             if ($this->facultyModel) {
                 $specification->faculty()->associate($this->facultyModel);
             }
+
             if ($this->departmentModel) {
                 $specification->department()->associate($this->departmentModel);
             }
+
             if ($awardModel = Award::where('abbrev', $award)->first()) {
                 $specification->award()->associate($awardModel);
             }
 
             if (!$specification->url) {
-
                 try {
                     $url = $node->filter('a[href]')->first()->link()->getUri();
 
@@ -139,7 +147,6 @@ class SpecificationClient extends AbstractClient
                     $specification->file = basename($url, '.pdf').'_'.$hash.'.pdf';
                 }
                 catch (InvalidArgumentException $e) { }
-
             }
 
             $specification->save();
@@ -148,7 +155,7 @@ class SpecificationClient extends AbstractClient
             {
                 dispatch(new DownloadSpecificationJob($specification));
             }
-            
+
         }
     }
 }

@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
-
 use Imperial\Simp\Calendar;
 
-class CalendarsTableSeeder extends Seeder
+class CalendarsTableSeeder extends AbstractJsonTableSeeder
 {
     /**
      * Run the database seeds.
@@ -13,7 +11,7 @@ class CalendarsTableSeeder extends Seeder
      */
     public function run()
     {
-        $calendars = json_decode(Storage::get('lists/calendars.json'), true);
+        $calendars = $this->data('calendars');
 
         foreach ($calendars as $calendar) {
 

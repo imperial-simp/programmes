@@ -11,7 +11,7 @@
 |
 */
 
-Artisan::command('specs:retrieve', function () {
+Artisan::command('specs:retrieve {source}', function ($source) {
 
     $client = new Imperial\Simp\Clients\SpecificationClient;
 

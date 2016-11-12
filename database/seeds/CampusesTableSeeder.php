@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
-
 use Imperial\Simp\Campus;
 
-class CampusesTableSeeder extends Seeder
+class CampusesTableSeeder extends AbstractJsonTableSeeder
 {
     /**
      * Run the database seeds.
@@ -13,7 +11,7 @@ class CampusesTableSeeder extends Seeder
      */
     public function run()
     {
-        $campuses = json_decode(Storage::get('lists/campuses.json'), true);
+        $campuses = $this->data('campuses');
 
         foreach ($campuses as $campus) {
 
