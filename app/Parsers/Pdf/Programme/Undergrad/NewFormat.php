@@ -1,10 +1,10 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Pdf\Programme\Postgrad\NewFormat;
+namespace Imperial\Simp\Parsers\Pdf\Programme\Undergrad;
 
-use Imperial\Simp\Parsers\Pdf\Programme\Undergrad\NewFormat\Parser as BaseParser;
+use Imperial\Simp\Parsers\Pdf\Programme\Undergrad\OldFormat as BaseParser;
 
-class Parser extends BaseParser
+class NewFormat extends BaseParser
 {
     public function read()
     {

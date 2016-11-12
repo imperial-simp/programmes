@@ -1,19 +1,19 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Module\Project;
+namespace Imperial\Simp\Parsers\Pdf\Module\Project;
 
-use Imperial\Simp\Parsers\Module\Module\NewFormat as ModuleParser;
+use Imperial\Simp\Parsers\Pdf\Module\Module\NewFormat as BaseParser;
 
-class NewFormat extends ModuleParser
+class NewFormat extends BaseParser
 {
     public function read()
     {
         return $this;
     }
-    
+
     public static function identifyParser($text, $details = [])
     {
         return preg_match('/^Project Outline/', $text);
     }
-    
+
 }

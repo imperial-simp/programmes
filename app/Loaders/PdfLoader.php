@@ -2,49 +2,42 @@
 
 namespace Imperial\Simp\Loaders;
 
-class PdfLoader
+class PdfLoader extends AbstractLoader
 {
-    protected $path;
-    protected $details = [];
-    protected $contents;
 
-    public static function load($path)
+    public function loadPath($path)
     {
-        $instance = new static();
-
-        $instance->path = storage_path('app/'.$path);
+        $this->path = storage_path('app/'.$path);
         $pdf = app('parser.pdf')->parseFile($this->path);
-        $instance->setDetails($pdf->getDetails());
-        $instance->setContents($pdf->getText());
+        $this->setDetails($pdf->getDetails());
+        $this->setText($pdf->getText());
     }
 
-    public function setPath($path)
+    protected function getParsers()
     {
-        $this->path = $path;
+        return [
+            'Pdf' => [
+                'Programme' => [
+                    'Postgrad' => [
+                        'MEdFormat',
+                        'NewFormat',
+                        'OldFormat',
+                    ],
+                    'Undergrad' => [
+                        'NewFormat',
+                        'OldFormat',
+                    ],
+                ],
+                'Module' => [
+                    'Module' => [
+                        'NewFormat',
+                    ],
+                    'Project' => [
+                        'NewFormat',
+                    ],
+                ],
+            ],
+        ];
     }
 
-    public function setDetails(array $details)
-    {
-        $this->details = $details;
-    }
-
-    public function setContents($contents)
-    {
-        $this->contents = $contents;
-    }
-
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    public function getDetails()
-    {
-        return $this->details;
-    }
-
-    public function getContents()
-    {
-        return $this->contents;
-    }
 }

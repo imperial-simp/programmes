@@ -3,6 +3,7 @@
 namespace Imperial\Simp\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Smalot\PdfParser\Parser as PdfParser;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton('parser.pdf', function() {
+          return new PdfParser();
+        });
     }
 }

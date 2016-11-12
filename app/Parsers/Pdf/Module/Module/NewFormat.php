@@ -1,19 +1,19 @@
 <?php
 
-namespace Imperial\Simp\Parsers\Module\Module;
+namespace Imperial\Simp\Parsers\Pdf\Module\Module;
 
-use Imperial\Simp\Parsers\Module\Parser as ModuleParser;
+use Imperial\Simp\Parsers\Pdf\Module\AbstractPdfParser as BaseParser;
 
-class NewFormat extends ModuleParser
+class NewFormat extends BaseParser
 {
     public function read()
     {
         return $this;
     }
-    
+
     public static function identifyParser($text, $details = [])
     {
         return preg_match('/^Module Outline/', $text);
     }
-    
+
 }

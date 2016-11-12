@@ -9,14 +9,14 @@ abstract class AbstractHtmlParser extends AbstractParser
 {
     protected $crawler;
 
-    protected function load()
-    {
-        $html = Storage::get($this->specification->path);
-        $this->setText($html);
-        $this->crawler = new Crawler($html);
-
-        // $this->setDetails(TODO);
-    }
+    // protected function load()
+    // {
+    //     $html = Storage::get($this->specification->path);
+    //     $this->setText($html);
+    //     $this->crawler = new Crawler($html);
+    //
+    //     // $this->setDetails(TODO);
+    // }
 
     public function getParsers()
     {

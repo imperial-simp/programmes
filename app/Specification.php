@@ -3,6 +3,10 @@
 namespace Imperial\Simp;
 
 use Illuminate\Database\Eloquent\Model;
+use Imperial\Simp\Loaders\PdfLoader;
+// use Imperial\Simp\Loaders\HtmlLoader;
+
+use Exception;
 
 class Specification extends Model
 {
@@ -82,41 +86,33 @@ class Specification extends Model
         return $this->belongsTo(Calendar::class);
     }
 
-    public function identifyParser()
+    public function getParser()
     {
-        $parsers = [
-            'Pdf' => [
-                'Programme' => [
-                    'Postgrad' => [
-                        'MEdFormat' => 'Parser',
-                        'NewFormat' => 'Parser',
-                        'OldFormat' => 'Parser',
-                    ],
-                    'Undergrad' => [
-                        'NewFormat' => 'Parser',
-                        'OldFormat' => 'Parser',
-                    ],
-                ],
-                'Module' => [
-                    'Module' => [
-                        'NewFormat' => 'Parser',
-                    ],
-                    'Project' => [
-                        'NewFormat' => 'Parser',
-                    ],
-                ],
-            ],
-        ];
+        if ($this->mime == 'application/pdf') {
+            $loader = PdfLoader::load($this->path);
+        }
+        // elseif ($this->mime == 'text/html') {
+            // $loader = HtmlLoader::load($this->path);
+        // }
+        else {
+            throw new Exception(sprintf('Cannot identify parser for MIME type %s.', $this->mime));
+        }
 
-        $parsers = array_dot($parsers, '\Imperial\Simp\Parsers\\');
+        if ($this->parser) {
+            $parser = $this->parser;
+            return new $parser($this, $loader->getText(), $loader->getDetails());
+        }
 
-        foreach ($parsers as $namespace => $class) {
-            $class = str_replace('.', '\\', $namespace.'\\'.$class);
+        $parsers = $loader->parsers();
 
-            if ($class::identify($text, $details)) {
-                $parser = new $class($text);
-                break;
+        foreach ($parsers as $class) {
+            if ($class::identify($loader->getText(), $loader->getDetails())) {
+                $this->parser = $class;
+                $this->save();
+                return new $class($this, $loader->getText(), $loader->getDetails());
             }
         }
+
+        throw new Exception(sprintf('Cannot identify parser for specification [%s].', $this->id));
     }
 }

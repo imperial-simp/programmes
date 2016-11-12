@@ -24,4 +24,11 @@ Artisan::command('specs:retrieve {source?}', function ($source = null) {
         $client->run();
     }
 
-})->describe('Retrieve the list of programme specifications.');
+})->describe('Retrieve the list of specifications from online sources.');
+
+Artisan::command('specs:parse {id}', function ($id) {
+    $spec = Imperial\Simp\Specification::findOrFail($id);
+    $parser = $spec->getParser();
+    dd(get_class($parser));
+
+})->describe('Parse a specification file.');
