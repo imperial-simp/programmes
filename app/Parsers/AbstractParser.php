@@ -11,6 +11,8 @@ abstract class AbstractParser
     protected $specification;
     protected $text;
     protected $details = [];
+    protected $errors = [];
+    protected $rawText;
 
     public function __construct(Specification $specification, $text, array $details)
     {
@@ -19,9 +21,16 @@ abstract class AbstractParser
         $this->setDetails($details);
     }
 
-    protected function setText($text)
+    protected final function setText($text)
     {
+        $this->rawText = $text;
         $this->text = $this->tidyText($text);
+        $this->afterSetText();
+    }
+
+    protected function afterSetText()
+    {
+        //
     }
 
     public function setDetails(array $details)
@@ -32,6 +41,23 @@ abstract class AbstractParser
     protected function tidyText($text)
     {
         return $text;
+    }
+
+    protected function reportMissing($key, $missing)
+    {
+        foreach ((array) $missing as $value) {
+            $this->errors['Missing'][$key][] = $value;
+        }
+    }
+
+    protected function reportError($key, $value)
+    {
+        $this->errors['Errors'][$key] = $value;
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
     public static function identify($text, $details)
@@ -52,7 +78,20 @@ abstract class AbstractParser
 
     public function output()
     {
-        return $this->lines;
+        $return = [
+            'Specification' => $this->lines,
+        ];
+
+        if (count($this->getErrors())) {
+            $return['Errors'] = $this->getErrors();
+        }
+
+        return $return;
+    }
+
+    public function getRawText()
+    {
+        return $this->rawText;
     }
 
     protected function slug($title)
@@ -73,6 +112,57 @@ abstract class AbstractParser
         $title = str_replace('Elearning', 'eLearning', $title);
 
         return trim($title, '_');
+    }
+
+    public function numberFromWord($val)
+    {
+        if (is_numeric($val)) {
+            return (float) $val;
+        }
+
+        $val = strtolower($val);
+
+        $words = [
+            'zero',
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+            'six',
+            'seven',
+            'eight',
+            'nine',
+            'ten',
+        ];
+
+        foreach ($words as $number => $word) {
+            if ($val == $word) {
+                return $number;
+            }
+        }
+
+        $words = [
+            'zeroth',
+            'first',
+            'second',
+            'third',
+            'fourth',
+            'fifth',
+            'sixth',
+            'seventh',
+            'eighth',
+            'ninth',
+            'tenth',
+        ];
+
+        foreach ($words as $number => $word) {
+            if ($val == $word) {
+                return $number;
+            }
+        }
+
+        return $val;
     }
 
 }

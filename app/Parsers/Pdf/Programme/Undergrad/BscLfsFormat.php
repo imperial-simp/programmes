@@ -6,10 +6,6 @@ use Imperial\Simp\Parsers\Pdf\Programme\Undergrad\OldFormat as BaseParser;
 
 class BScLfsFormat extends BaseParser
 {
-    public function read()
-    {
-        return $this;
-    }
 
     public static function identifyParser($text, $details = [])
     {

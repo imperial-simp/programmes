@@ -32,3 +32,18 @@ Artisan::command('specs:parse {id}', function ($id) {
     dispatch(new Imperial\Simp\Jobs\ParseSpecificationJob($specification));
 
 })->describe('Parse a specification file.');
+
+Artisan::command('specs:identify', function () {
+    $specifications = Imperial\Simp\Specification::where('mime', 'application/pdf')->whereNull('parser')->limit(10)->get();
+
+    foreach ($specifications as $specification) {
+        try {
+            $specification->getParser();
+        }
+        catch (Exception $e) {
+            $specification->parser = 'UNKNOWN';
+            $specification->save();
+        }
+    }
+
+})->describe('Identify the parser for a specification file.');

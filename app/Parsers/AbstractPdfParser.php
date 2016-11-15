@@ -8,11 +8,9 @@ abstract class AbstractPdfParser extends AbstractParser
 {
     protected $lines = [];
 
-    protected function setText($text)
+    protected function afterSetText()
     {
-        $text = $this->tidyText($text);
-        $this->text = $text;
-        $this->lines = explode(PHP_EOL, $text);
+        $this->lines = explode(PHP_EOL, $this->text);
     }
 
 }

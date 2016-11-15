@@ -76,6 +76,8 @@ abstract class AbstractPdfParser extends BaseParser
             $buffer = [];
         }
 
+        $this->reportMissing('_Sections', $sectionHeadings);
+
         return $sections;
     }
 
@@ -90,14 +92,6 @@ abstract class AbstractPdfParser extends BaseParser
             $line = trim($line);
 
             if ($line) {
-
-                try {
-                    preg_match('#^('.$sectionField.')(.+)$#', $line);
-                }
-                catch (\Exception $e)
-                {
-                    dd($sectionField);
-                }
 
                 if ($sectionField && preg_match('#^('.$sectionField.')$#', $line)) {
 
@@ -141,6 +135,8 @@ abstract class AbstractPdfParser extends BaseParser
                 }
             }
         }
+
+        $this->reportMissing($heading, $sectionFields);
 
         return $fields;
     }
@@ -186,8 +182,8 @@ abstract class AbstractPdfParser extends BaseParser
             'Year % Year Weighting Module % Module Weighting' => 'Module Weighting',
             'Module % Module Weighting' => 'Module Weighting',
             'The programme\'s competency standards documents can be found at:' => 'Competency Standards',
-            'The College\'s Policy on Re-sits is available at:' => 'Resit Policy',
-            'The College\'s Policy on Mitigating Circumstances is available at:' => 'Mitigating Circumstances Policy',
+            '(Re-sit Policy )?The College\'s Policy on Re-sits is available at:' => 'Resit Policy',
+            '(Mitigating Circumstances Policy )?The College\'s Policy on Mitigating Circumstances is available at:' => 'Mitigating Circumstances Policy',
         ];
 
         foreach ($headerReplacements as $headerFind => $headerReplace) {

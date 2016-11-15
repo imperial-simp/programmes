@@ -33,8 +33,10 @@ class ParseSpecificationJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->specification->parse();
+        $parser = $this->specification->parse();
         $contents = json_encode($this->specification->contents, JSON_PRETTY_PRINT);
         Storage::put('specs/json/'.$this->specification->file.'.json', $contents);
+        Storage::put('specs/txt/'.$this->specification->file.'.txt', $parser->getRawText());
+        // return $parser->getErrors();
     }
 }

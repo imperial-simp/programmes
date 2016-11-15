@@ -97,7 +97,10 @@ class Specification extends Model
         $parser = $this->getParser();
         $this->contents = $parser->read()->output();
         $this->parsed_at = $this->freshTimestamp();
+        
         $this->save();
+
+        return $parser;
     }
 
     public function getParser()

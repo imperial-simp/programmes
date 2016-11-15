@@ -6,10 +6,6 @@ use Imperial\Simp\Parsers\Pdf\Programme\Postgrad\NewFormat as BaseFormat;
 
 class MEdFormat extends BaseFormat
 {
-    public function read()
-    {
-        return $this;
-    }
 
     public static function identifyParser($text, $details = [])
     {

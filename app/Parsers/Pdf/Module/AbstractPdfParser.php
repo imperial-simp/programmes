@@ -6,9 +6,5 @@ use Imperial\Simp\Parsers\AbstractPdfParser as BaseParser;
 
 abstract class AbstractPdfParser extends BaseParser
 {
-    public function read()
-    {
-        return $this;
-    }
 
 }
