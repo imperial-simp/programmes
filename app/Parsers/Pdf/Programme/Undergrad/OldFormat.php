@@ -194,6 +194,8 @@ class OldFormat extends BaseParser
 
         $lines = preg_replace('/\n([\.\d\s]+)\n/m', ' $1 ', $lines);
         $lines = preg_replace('/\n *(\w+) *\n/m', ' $1 ', $lines);
+        $lines = preg_replace('/\n *(ELECTIVE|CORE)/m', ' $1', $lines);
+        $lines = preg_replace('/^ *([A-Z0-9-]+) *\n/mi', '$1 ', $lines);
 
         $lines = explode(PHP_EOL, $lines);
 
