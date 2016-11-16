@@ -44,11 +44,13 @@ class ParseSpecificationJob implements ShouldQueue
         if (count($parser->getErrors())) {
             echo 'The following warnings were encountered when attempting to parse the file'.PHP_EOL;
             echo '  "'.$this->specification->file.'":'.PHP_EOL;
+            echo 'with parser '.get_class($parser).PHP_EOL;
             var_dump($parser->getErrors());
         }
         else {
             echo 'Successfully parsed the file'.PHP_EOL;
-            echo '  "'.$this->specification->file.'".'.PHP_EOL;
+            echo '  "'.$this->specification->file.'"'.PHP_EOL;
+            echo 'with parser '.get_class($parser).PHP_EOL;
         }
     }
 }

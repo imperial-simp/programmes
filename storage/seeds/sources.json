@@ -13,5 +13,20 @@
         "name": "qa-pdf",
         "url": "https://www.imperial.ac.uk/staff/tools-and-reference/quality-assurance-enhancement/programme-information/programme-specifications/",
         "client": "Imperial\\Simp\\Clients\\SpecificationClient"
+    },
+    {
+        "name": "horizons-ug1",
+        "url": "http://www.imperial.ac.uk/horizons/course-options/first-year-undergraduates/",
+        "client": "Imperial\\Simp\\Clients\\HorizonsModuleClient"
+    },
+    {
+        "name": "horizons-ug2",
+        "url": "http://www.imperial.ac.uk/horizons/course-options/second-year-undergraduates/",
+        "client": "Imperial\\Simp\\Clients\\HorizonsModuleClient"
+    },
+    {
+        "name": "horizons-ug34",
+        "url": "http://www.imperial.ac.uk/horizons/course-options/third-and-fourth-year-undergraduates/",
+        "client": "Imperial\\Simp\\Clients\\HorizonsModuleClient"
     }
 ]

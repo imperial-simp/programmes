@@ -114,20 +114,20 @@ class Specification extends Model
             $loader = PdfLoader::load($this->path);
         }
         elseif ($this->mime == 'text/html') {
-        $loader = HtmlLoader::load($this->path);
+            $loader = HtmlLoader::load($this->path);
         }
         else {
-            throw new Exception(sprintf('Cannot identify parser for MIME type %s.', $this->mime));
+            throw new Exception(sprintf('Cannot identify loader for MIME type %s.', $this->mime));
         }
 
-        if ($this->parser) {
-            $parser = $this->parser;
-            if (class_exists($parser)) {
-                if ($parser::identify($loader->getText(), $loader->getDetails())) {
-                    return new $parser($this, $loader->getText(), $loader->getDetails(), $loader->getLinks());
-                }
-            }
-        }
+        // if ($this->parser) {
+        //     $parser = $this->parser;
+        //     if (class_exists($parser)) {
+        //         if ($parser::identify($loader->getText(), $loader->getDetails())) {
+        //             return new $parser($this, $loader->getText(), $loader->getDetails(), $loader->getLinks());
+        //         }
+        //     }
+        // } //FIXME Need to be able to force recheck of parser.
 
         $parsers = $loader->parsers();
 

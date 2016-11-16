@@ -139,6 +139,8 @@ class OldFormat extends BaseParser
             if (preg_match('/( (at|see): )?(http:|www\.)/', $line)) {
                 $line = preg_replace('/^The ((College|programme)\'s |programme is consistent with the )?/', '', $line);
                 $line = preg_replace('/((which )?(can be found|is( available)?) at| see):/', '__AT__', $line);
+                $line = preg_replace('/Imperial College is an independent corporation/', 'College Charter__AT__', $line);
+                $line = preg_replace('/Imperial College London is regulated by the Higher Education Funding Council for England \(HEFCE\)/', 'HEFCE__AT__', $line);
 
                 $line = explode('__AT__', $line);
 
@@ -263,7 +265,7 @@ class OldFormat extends BaseParser
     public function getModuleRegex()
     {
         return '^
-        (?<Code>[^\s]+)\s
+        (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
         (?<Title>[^%]{5,100}?)\s
         (?<Elective>CORE\*?|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
         (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
@@ -279,6 +281,19 @@ class OldFormat extends BaseParser
         $';
     }
 
+    public function getVariousAllModuleRegex()
+    {
+        return '^
+        (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
+        (?<Title>[^%]{5,100}?)\s
+        (?<Elective>CORE\*?|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
+        (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
+        (?<Various_All>Various)\s
+        (?<FHEQ>\d)\s
+        (?<ECTS>[\d.]+)
+        $';
+    }
+
     public function getModuleFiguresRegex()
     {
         return '/(\d+%? ){6,}/';
@@ -286,7 +301,13 @@ class OldFormat extends BaseParser
 
     protected function readModule($line)
     {
-        $regex = '@'.$this->getModuleRegex().'@smx';
+        $regex = '@'.$this->getModuleRegex().'@simx';
+
+        if (preg_match($regex, $line, $matches)) {
+            return $this->getModuleKeys($matches);
+        }
+
+        $regex = '@'.$this->getVariousAllModuleRegex().'@simx';
 
         if (preg_match($regex, $line, $matches)) {
             return $this->getModuleKeys($matches);
@@ -295,7 +316,7 @@ class OldFormat extends BaseParser
 
     protected function readBrokenModules(&$text)
     {
-        $regex = '@'.$this->getModuleRegex().'@smx';
+        $regex = '@'.$this->getModuleRegex().'@simx';
         $modules = [];
 
         if (preg_match_all($regex, $text, $matches, PREG_SET_ORDER)) {
@@ -318,32 +339,42 @@ class OldFormat extends BaseParser
     {
         $string = $array[0];
 
-        // $fields = array_filter(array_keys($array), 'is_string');
-        // $fields = array_only($array, $fields);
-
         $fields = $this->stringKeys($array);
 
         foreach ($fields as &$value) {
             $value = is_string($value) ? trim(preg_replace('/\s+/', ' ', $value)) : $value;
         }
 
-        if (@$fields['Various_Hours'] == 'Various') {
+        if (@$fields['Various_All'] == 'Various') {
             $fields['Learning_Hours'] = '(various)';
             $fields['Placement_Hours'] = '(various)';
             $fields['Indiv_Study_Hours'] = '(various)';
-        }
-
-        if (@$fields['Various_Assessment'] == 'Various') {
+            $fields['Total_Hours'] = '(various)';
             $fields['Written_Exam'] = '(various)';
             $fields['Coursework'] = '(various)';
             $fields['Practical'] = '(various)';
         }
+        else {
 
-        if (@$fields['Various_Assessment_FHEQ'] == 'Various') {
-            $fields['Written_Exam'] = '(various)';
-            $fields['Coursework'] = '(various)';
-            $fields['Practical'] = '(various)';
-            $fields['FHEQ'] = '(various)';
+            if (@$fields['Various_Hours'] == 'Various') {
+                $fields['Learning_Hours'] = '(various)';
+                $fields['Placement_Hours'] = '(various)';
+                $fields['Indiv_Study_Hours'] = '(various)';
+            }
+
+            if (@$fields['Various_Assessment'] == 'Various') {
+                $fields['Written_Exam'] = '(various)';
+                $fields['Coursework'] = '(various)';
+                $fields['Practical'] = '(various)';
+            }
+
+            if (@$fields['Various_Assessment_FHEQ'] == 'Various') {
+                $fields['Written_Exam'] = '(various)';
+                $fields['Coursework'] = '(various)';
+                $fields['Practical'] = '(various)';
+                $fields['FHEQ'] = '(various)';
+            }
+
         }
 
         if (preg_match('/^(.*)(\*+)$/', $fields['Elective'], $matches)) {
@@ -363,6 +394,7 @@ class OldFormat extends BaseParser
 
         $fields['Year'] = $this->splitOr($fields['Year']);
 
+        unset($fields['Various_All']);
         unset($fields['Various_Hours']);
         unset($fields['Various_Assessment']);
         unset($fields['Various_Assessment_FHEQ']);
@@ -396,7 +428,7 @@ class OldFormat extends BaseParser
 
     public function getModuleWeightingYearRegex()
     {
-        return '/^(?<Year>(?:Year (?:One|Two|Three|Four|Five|Six|\d))|(?:First|1st|Second|2nd|Third|3rd|Fourth|Fifth|Sixth|[4-6]th|Final) Year) (?<Weighting>[\d\.]+ ?%)$/';
+        return '/^(?<Year>(?:Year (?:One|Two|Three|Four|Five|Six|\d))|(?:First|1st|Second|2nd|Third|3rd|Fourth|Fifth|Sixth|[4-6]th|Final) Year) (?<Weighting>[\d\.]+ ?%)(?<Rest>.*)$/';
     }
 
     public function getListSeparatorsRegex()
@@ -407,7 +439,6 @@ class OldFormat extends BaseParser
     protected function readModuleWeightingSection(array $lines = [])
     {
         $weightings = [];
-        $buffer = [];
         $moduleBuffer = [];
         $unknown = [];
 
@@ -416,27 +447,43 @@ class OldFormat extends BaseParser
         $yearRegex = $this->getModuleWeightingYearRegex();
         $moduleRegex = $this->getModuleWeightingRegex();
 
-        foreach ($lines as $line) {
-            if (preg_match($yearRegex, $line, $matches)) {
+        $lines = implode(PHP_EOL, $lines);
 
-                if ($lastYear) {
-                    $weightings[$this->slug($lastYear)]['Modules'] = $buffer;
-                    $buffer = [];
+        $lines = preg_replace('/\n ?([\d\.]+ ?%?)/m', ' $1'.PHP_EOL, $lines);
+
+        $lines = explode(PHP_EOL, $lines);
+
+        foreach ($lines as $i => &$line) {
+            $lastLine = false;
+
+            if (isset($lines[$i+1]) && !preg_match($yearRegex, $line, $matches) && preg_match($yearRegex, $line.' '.$lines[$i+1], $matches)) {
+                $lines[$i+1] = null;
+                $lastLine = true;
+            }
+
+            if ($lastLine || preg_match($yearRegex, $line, $matches)) {
+
+                if ($rest = trim(@$matches['Rest'])) {
+                    $lines[$i+1] = $rest . ' ' . $lines[$i+1];
                 }
 
                 $lastYear = $matches['Year'];
-                $weightings[$this->slug($lastYear)]['Weighting'] = $matches['Weighting'];
+
+                if (isset($matches['Weighting'])) {
+                    $weightings[$this->slug($lastYear)]['Weighting'] = $matches['Weighting'];
+                }
+
+                if (isset($matches['Total_Marks'])) {
+                    $weightings[$this->slug($lastYear)]['Total_Marks'] = $matches['Total_Marks'];
+                }
             }
             else {
                 if ($line != 'Module Weighting') {
-                    $buffer[] = $line;
+                    $weightings[$this->slug($lastYear)]['Modules'][] = $line;
                 }
             }
         }
 
-        if ($lastYear && !empty($buffer)) {
-            $weightings[$this->slug($lastYear)]['Modules'] = $buffer;
-        }
 
         foreach ($weightings as $yr => &$year) {
             $modules = implode(PHP_EOL, $year['Modules']);
@@ -449,19 +496,32 @@ class OldFormat extends BaseParser
 
                     $module = [
                       'Module' => trim(preg_replace('/\s+/', ' ', $match['Module'])),
-                      'Weighting' => $match['Weighting'],
                     ];
+
+                    if (isset($match['Weighting'])) {
+                        $module['Weighting'] = $match['Weighting'];
+                    }
+
+                    if (isset($match['Total_Marks'])) {
+                        $module['Total_Marks'] = $match['Total_Marks'];
+                    }
 
                     if ($match['Note']) {
                         $module['Note'] = $match['Note'];
                     }
-
-                    if (preg_match('/([\d.]+)r%/', $module['Weighting'], $found)) {
-                        $module['Weighting'] = $found[1].'%';
-                        $module['Approximate'] = true;
+                    elseif (preg_match('/(?<Module>.*)(?<Note>\*+)$/', $module['Module'], $noteMatch)) {
+                        $module['Module'] = $noteMatch['Module'];
+                        $module['Note'] = $noteMatch['Note'];
                     }
-                    elseif (preg_match('/\.(3{2,}|6{2,})%/', $module['Weighting'])) {
-                        $module['Approximate'] = true;
+
+                    if (isset($module['Weighting'])) {
+                        if (preg_match('/([\d.]+)r%/', $module['Weighting'], $found)) {
+                            $module['Weighting'] = $found[1].'%';
+                            $module['Approximate'] = true;
+                        }
+                        elseif (preg_match('/\.(3{2,}|6{2,})%/', $module['Weighting'])) {
+                            $module['Approximate'] = true;
+                        }
                     }
 
                     if (preg_match('/^EITHER: (.*)/', $module['Module'])) {
@@ -469,7 +529,7 @@ class OldFormat extends BaseParser
                         $module['Options'] = array_values(array_filter(preg_split($this->getListSeparatorsRegex(), $module['Module'])));
                     }
 
-                    if ($match['Each']) {
+                    if (trim($match['Each'])) {
                         $module['Each'] = true;
                     }
 
@@ -479,7 +539,7 @@ class OldFormat extends BaseParser
                         $module['Options'] = trim($match['Options']);
 
                         if (preg_match('/elective group \((.+)\)/i', $module['Options'], $match)) {
-                            $module['Elective_Group'] = $match[1];
+                            $module['Elective_Group'] = $this->splitOr($match[1]);
                         }
                     }
 

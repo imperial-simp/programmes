@@ -52,7 +52,6 @@ abstract class AbstractPdfParser extends BaseParser
     protected function splitSections(array $lines, array $sectionHeadings)
     {
         $sections = [];
-        // $buffer = [];
         $lastHeading = null;
 
         $sectionHeading = array_shift($sectionHeadings);
@@ -62,25 +61,7 @@ abstract class AbstractPdfParser extends BaseParser
 
             if ($line) {
 
-                // $m = null; //TODO
-                //
-                // if (stripos($sectionHeading, '\n') !== false) {
-                //     $m = 'm';
-                //     $line = $lines[$i-1] . PHP_EOL . $line;
-                // } //TODO
-
-                // $lastHeading = 'Unknown Section';
-
-                if ($sectionHeading && preg_match('#^('.$sectionHeading.')(.*)$#i', $line, $matches)) { //.$m //TODO
-                    // if ($lastHeading) {
-                        // $sections[$this->slug($lastHeading)] = $buffer;
-                        // $sections[$this->slug($lastHeading)][] = $line;
-                        // $buffer = [];
-                    // }
-
-                    // if ($m) {
-                    //     $sections[$this->slug($sectionHeading)][] = $line;
-                    // } //TODO
+                if ($sectionHeading && preg_match('#^('.$sectionHeading.')(.*)$#i', $line, $matches)) {
 
                     if ($matches[2]) {
                         $sections[$this->slug($sectionHeading)][] = $matches[2];
@@ -91,7 +72,6 @@ abstract class AbstractPdfParser extends BaseParser
                 }
                 else {
                     $sections[$this->slug($lastHeading)][] = $line;
-                    // $buffer[] = $line;
                 }
             }
         }
@@ -100,12 +80,11 @@ abstract class AbstractPdfParser extends BaseParser
             array_unshift($sectionHeadings, $this->slug($sectionHeading));
         }
 
-        // if ($lastHeading) {
-        //     $sections[$this->slug($lastHeading)] = $buffer;
-        //     $buffer = [];
-        // }
+        $sectionHeadings = array_values(array_filter($sectionHeadings));
 
-        $this->reportMissing('_Sections', $sectionHeadings);
+        if (count($sectionHeadings)) {
+            $this->reportMissing('Sections', $sectionHeadings);
+        }
 
         return $sections;
     }
@@ -208,15 +187,17 @@ abstract class AbstractPdfParser extends BaseParser
             'Code Title Core/ Elective Year L&T Hours Ind. Study Hours Place-? ment Hours Total Hours % Written Exam % Course-? work % Practical FHEQ Level ECTS' =>
             'Module Table Header',
             'Qualifications Framework of the European Higher Education Area' => 'Qualifications Framework of the European Higher Education Area',
+            'Year % Year Weighting Total Marks Available Module Total Marks Available' => 'Module Total Marks Weighting',
             'Year % Year Weighting Module % Module Weighting' => 'Module Weighting',
             'Module % Module Weighting' => 'Module Weighting',
-            'The (programme\'s )?competency standards .* at:' => 'Competency Standards',
-            '(Re-sit Policy )?The College\'s Policy on Re-sits is available at:' => 'Resit Policy',
-            '(Mitigating Circumstances Policy )?The College\'s Policy on Mitigating Circumstances is available at:' => PHP_EOL.'Mitigating Circumstances Policy',
+            'The (?:programme\'s )?competency standards .* at:' => 'Competency Standards',
+            '(?:Re-sit Policy )?The College\'s Policy on Re-sits is available at:' => 'Resit Policy',
+            '(?:Mitigating Circumstances Policy )?The College\'s Policy on Mitigating Circumstances is available at:' => PHP_EOL.'Mitigating Circumstances Policy',
         ];
 
         foreach ($headerReplacements as $headerFind => $headerReplace) {
-            $text = preg_replace('#'.str_replace(' ', '\s*', $headerFind).'#m', $headerReplace, $text);
+            $headerFind = str_replace(' ', '\s*', $headerFind);
+            $text = preg_replace('#'.$headerFind.'#m', $headerReplace, $text);
         }
 
         $text = trim($text);

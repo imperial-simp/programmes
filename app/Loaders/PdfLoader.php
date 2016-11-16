@@ -47,6 +47,8 @@ class PdfLoader extends AbstractLoader
             '/(?<!^)(\x{2022})/uim' => PHP_EOL.'$1',
             '/(\x{2022} .*)\n([a-z])/um' => '$1 $2',
             '/\x{2019}/u' => '\'',
+            '/&#34/' => '"',
+            '/&#34/' => '\'',
             '/\x{2013}/u' => '-',
             '/ ([,-])/' => '$1',
             '/\n([a-z])/' => '$1',
@@ -87,6 +89,7 @@ class PdfLoader extends AbstractLoader
                     ],
                     'Undergrad' => [
                         'NewFormat',
+                        'TotalMarksFormat',
                         'BscLfsFormat',
                         'BEngBiomedFormat',
                         // 'AssociateshipLaterOldFormat',
