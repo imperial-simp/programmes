@@ -35,13 +35,13 @@ class CreateSpecificationsTable extends Migration
             $table->unsignedInteger('joint_award_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('source_id', 'source_foreign')->references('id')->on('sources');
-            $table->foreign('institution_id', 'institution_foreign')->references('id')->on('institutions');
-            $table->foreign('faculty_id', 'faculty_foreign')->references('id')->on('faculties');
-            $table->foreign('department_id', 'department_foreign')->references('id')->on('departments');
-            $table->foreign('award_id', 'award_foreign')->references('id')->on('awards');
-            $table->foreign('calendar_id', 'calendar_foreign')->references('id')->on('calendars');
-            $table->foreign('joint_award_id', 'joint_award_foreign')->references('id')->on('award');
+            $table->foreign('source_id')->references('id')->on('sources');
+            $table->foreign('institution_id')->references('id')->on('institutions');
+            $table->foreign('faculty_id')->references('id')->on('faculties');
+            $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('award_id')->references('id')->on('awards');
+            $table->foreign('joint_award_id')->references('id')->on('awards');
+            $table->foreign('calendar_id')->references('id')->on('calendars');
         });
     }
 
