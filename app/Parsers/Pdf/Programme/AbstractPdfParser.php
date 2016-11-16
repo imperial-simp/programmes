@@ -17,7 +17,7 @@ abstract class AbstractPdfParser extends BaseParser
                 $method = 'get'.$methodHeading.'Headings';
 
                 if (method_exists($this, $method)) {
-                    $sectionHeadings = $this->$method();
+                    $sectionHeadings = $this->$method($lines);
                     $lines = $this->readSection($lines, $sectionHeadings, $heading);
                 }
 
@@ -35,12 +35,12 @@ abstract class AbstractPdfParser extends BaseParser
     public function splitSections(array $lines, array $sectionHeadings)
     {
         $sections = [];
-        $buffer = [];
+        // $buffer = [];
         $lastHeading = null;
 
         $sectionHeading = array_shift($sectionHeadings);
 
-        foreach ($lines as $line) {
+        foreach ($lines as $i => $line) {
             $line = trim($line);
 
             if ($line) {
@@ -52,11 +52,25 @@ abstract class AbstractPdfParser extends BaseParser
                     }
                 }
 
-                if ($sectionHeading && preg_match('#^('.$sectionHeading.')(.*)$#i', $line, $matches)) {
-                    if ($lastHeading) {
-                        $sections[$this->slug($lastHeading)] = $buffer;
-                        $buffer = [];
-                    }
+                // $m = null; //TODO
+                //
+                // if (stripos($sectionHeading, '\n') !== false) {
+                //     $m = 'm';
+                //     $line = $lines[$i-1] . PHP_EOL . $line;
+                // } //TODO
+
+                // $lastHeading = 'Unknown Section';
+
+                if ($sectionHeading && preg_match('#^('.$sectionHeading.')(.*)$#i', $line, $matches)) { //.$m //TODO
+                    // if ($lastHeading) {
+                        // $sections[$this->slug($lastHeading)] = $buffer;
+                        // $sections[$this->slug($lastHeading)][] = $line;
+                        // $buffer = [];
+                    // }
+
+                    // if ($m) {
+                    //     $sections[$this->slug($sectionHeading)][] = $line;
+                    // } //TODO
 
                     if ($matches[2]) {
                         $sections[$this->slug($sectionHeading)][] = $matches[2];
@@ -66,15 +80,16 @@ abstract class AbstractPdfParser extends BaseParser
                     $sectionHeading = array_shift($sectionHeadings);
                 }
                 else {
-                    $buffer[] = $line;
+                    $sections[$this->slug($lastHeading)][] = $line;
+                    // $buffer[] = $line;
                 }
             }
         }
 
-        if ($lastHeading) {
-            $sections[$this->slug($lastHeading)] = $buffer;
-            $buffer = [];
-        }
+        // if ($lastHeading) {
+        //     $sections[$this->slug($lastHeading)] = $buffer;
+        //     $buffer = [];
+        // }
 
         $this->reportMissing('_Sections', $sectionHeadings);
 
@@ -93,12 +108,12 @@ abstract class AbstractPdfParser extends BaseParser
 
             if ($line) {
 
-                if ($sectionField && preg_match('#^('.$sectionField.')$#', $line)) {
+                if ($sectionField && preg_match('#^('.$sectionField.')$#i', $line)) {
 
                     $lastField = $sectionField;
                     $sectionField = array_shift($sectionFields);
                 }
-                elseif ($sectionField && preg_match('#^('.$sectionField.')(.+)$#', $line, $matches)) {
+                elseif ($sectionField && preg_match('#^('.$sectionField.')(.+)$#i', $line, $matches)) {
 
                     $fields[$this->slug($sectionField)][] = $this->transformValue(trim($matches[2]), $heading, $this->slug($sectionField));
                     $lastField = $sectionField;
@@ -181,9 +196,9 @@ abstract class AbstractPdfParser extends BaseParser
             'Qualifications Framework of the European Higher Education Area' => 'Qualifications Framework of the European Higher Education Area',
             'Year % Year Weighting Module % Module Weighting' => 'Module Weighting',
             'Module % Module Weighting' => 'Module Weighting',
-            'The programme\'s competency standards documents can be found at:' => 'Competency Standards',
+            'The (programme\'s )?competency standards .* at:' => 'Competency Standards',
             '(Re-sit Policy )?The College\'s Policy on Re-sits is available at:' => 'Resit Policy',
-            '(Mitigating Circumstances Policy )?The College\'s Policy on Mitigating Circumstances is available at:' => 'Mitigating Circumstances Policy',
+            '(Mitigating Circumstances Policy )?The College\'s Policy on Mitigating Circumstances is available at:' => PHP_EOL.'Mitigating Circumstances Policy',
         ];
 
         foreach ($headerReplacements as $headerFind => $headerReplace) {

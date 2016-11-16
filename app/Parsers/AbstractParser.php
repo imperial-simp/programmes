@@ -11,14 +11,16 @@ abstract class AbstractParser
     protected $specification;
     protected $text;
     protected $details = [];
+    protected $links = [];
     protected $errors = [];
     protected $rawText;
 
-    public function __construct(Specification $specification, $text, array $details)
+    public function __construct(Specification $specification, $text, array $details, array $links)
     {
         $this->specification = $specification;
         $this->setText($text);
         $this->setDetails($details);
+        $this->setLinks($links);
     }
 
     protected final function setText($text)
@@ -38,6 +40,11 @@ abstract class AbstractParser
         $this->details = $details;
     }
 
+    public function setLinks(array $links)
+    {
+        $this->links = $links;
+    }
+
     protected function tidyText($text)
     {
         return $text;
@@ -55,9 +62,19 @@ abstract class AbstractParser
         $this->errors['Errors'][$key] = $value;
     }
 
+    protected function reportUnknown($key, $value)
+    {
+        $this->errors['Unknown'][$key] = $value;
+    }
+
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function getLinks()
+    {
+        return $this->links;
     }
 
     public static function identify($text, $details)
@@ -81,6 +98,10 @@ abstract class AbstractParser
         $return = [
             'Specification' => $this->lines,
         ];
+
+        if (count($this->getLinks())) {
+            $return['URLs'] = $this->getLinks();
+        }
 
         if (count($this->getErrors())) {
             $return['Errors'] = $this->getErrors();
@@ -112,6 +133,17 @@ abstract class AbstractParser
         $title = str_replace('Elearning', 'eLearning', $title);
 
         return trim($title, '_');
+    }
+
+    protected function splitOr($text)
+    {
+        $text = preg_split('@(\s*\b(?:or|and)\b\s*|/|&)@', $text);
+
+        if (count($text) == 1) {
+            $text = head($text);
+        }
+
+        return $text;
     }
 
     public function numberFromWord($val)

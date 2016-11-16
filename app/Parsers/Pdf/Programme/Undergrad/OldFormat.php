@@ -27,14 +27,14 @@ class OldFormat extends BaseParser
             'Assessment Strategy',
             'Assessment Structure',
             'Module Weighting',
-            '(Indicative )?Module List',
+            '(?:Indicative )?Module List',
             'Supporting Information',
         ];
     }
 
-    public function getProgrammeInformationHeadings()
+    public function getProgrammeInformationHeadings(array $lines = [])
     {
-        return [
+        $headings = [
             'Award\(s\)',
             'Associateship',
             'Programme Title',
@@ -51,9 +51,29 @@ class OldFormat extends BaseParser
             'EHEA Level',
             'External Accreditor\(s\)',
         ];
+
+        return $this->sortHeadings($headings, $lines);
     }
 
-    public function getSpecificationDetailsHeadings()
+    protected function sortHeadings(array $headings, array $lines)
+    {
+        $order = [];
+
+        foreach ($lines as $ln => $line) {
+            foreach ($headings as $heading) {
+                if (preg_match('#^('.$heading.').*#', $line)) {
+                    $order[$heading] = $ln;
+                }
+            }
+        }
+
+        asort($order);
+
+        return array_keys($order);
+
+    }
+
+    public function getSpecificationDetailsHeadings(array $lines = [])
     {
         return [
             'Student cohorts covered by specification',
@@ -63,17 +83,17 @@ class OldFormat extends BaseParser
         ];
     }
 
-    public function getEntryRequirementsHeadings()
+    public function getEntryRequirementsHeadings(array $lines = [])
     {
         return [
             'Academic Requirements?',
             '(?:Non ?-academic|Additional) Requirements?',
-            'English Requirements?',
+            'English (?:Language )?Requirements?',
             'Competency Standards',
         ];
     }
 
-    public function getLearningAndTeachingStrategyHeadings()
+    public function getLearningAndTeachingStrategyHeadings(array $lines = [])
     {
         return [
             'Scheduled Learning & Teaching Methods',
@@ -82,24 +102,24 @@ class OldFormat extends BaseParser
         ];
     }
 
-    public function getAssessmentStrategyHeadings()
+    public function getAssessmentStrategyHeadings(array $lines = [])
     {
         return [
             'Assessment Methods',
             'Academic Feedback Policy',
-            'Resit Policy',
+            'Re-?sits? Policy',
             'Mitigating Circumstances Policy',
         ];
     }
 
-    public function getAssessmentStructureHeadings()
+    public function getAssessmentStructureHeadings(array $lines = [])
     {
         return [
             'Marking Scheme',
         ];
     }
 
-    public function readSupportingInformationSection($lines)
+    public function readSupportingInformationSection(array $lines = [])
     {
 
         $info = [];
@@ -134,6 +154,7 @@ class OldFormat extends BaseParser
         ];
 
         if (count($unknown)) {
+            $this->reportUnknown('Supporting_Information', $unknown);
             $return['Other'] = $unknown;
         }
 
@@ -143,30 +164,43 @@ class OldFormat extends BaseParser
     public function readTotalCreditsField($value)
     {
         $value = implode(' ', $value);
-
         $value = str_replace('UK Credit', 'UK_Credit', $value);
 
+        $credits = [];
+
         if (preg_match_all('/([^ :]+): ?([^ :]+)/', $value, $matches, PREG_SET_ORDER)) {
-            $value = [];
 
             foreach ($matches as &$match) {
-                $value[trim($match[1])] = trim($match[2]);
+                $value = str_replace($match[0], null, $value);
+                $credits[trim($match[1])] = $this->splitOr(trim($match[2]));
             }
         }
 
-        return $value;
+        $value = trim($value);
+
+        if ($value) {
+            $credits['Unknown'] = $value;
+        }
+
+        return $credits;
     }
 
-    protected function readIndicativeModuleListSection($lines)
+    protected function readIndicativeModuleListSection(array $lines = [])
     {
         $modules = [];
         $unknown = [];
+
+        $lines = implode(PHP_EOL, $lines);
+
+        $lines = preg_replace('/\n([\.\d\s]+)\n/m', ' $1 ', $lines);
+        $lines = preg_replace('/\n *(\w+) *\n/m', ' $1 ', $lines);
+
+        $lines = explode(PHP_EOL, $lines);
 
         foreach ($lines as $i => &$line) {
             if (!in_array($line, ['Module List', 'Module Table Header', 'Indicative Module List'], true)) {
 
                 if (isset($lines[$i+1]) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
-                    if (str_is('*Horizon*', $line)) { dd($line.PHP_EOL.$lines[$i+1]); } //FIXME
                     $modules[] = $module;
                     $lines[$i+1] = null;
                 }
@@ -204,7 +238,8 @@ class OldFormat extends BaseParser
             'Modules' => $modules,
         ];
 
-        if (!empty($unknown)) {
+        if (count($unknown)) {
+            $this->reportUnknown('Indicative_Module_List', $unknown);
             $return['Unknown'] = $unknown;
         }
 
@@ -226,10 +261,10 @@ class OldFormat extends BaseParser
         (?<Indiv_Study_Hours>[\d.]+)\s
         (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various))\s
         (?<Total_Hours>[\d.]+)\s
-        (?:(?<Written_Exam>[\d.]+%?)\s
+        (?:(?:(?<Written_Exam>[\d.]+%?)\s
         (?<Coursework>[\d.]+%?)\s
-        (?<Practical>[\d.]+%?)\s
-        (?<FHEQ>\d)|(?<Various_Assessment>Various))\s
+        (?<Practical>[\d.]+%?)|(?<Various_Assessment>Various))\s
+        (?<FHEQ>\d)|(?<Various_Assessment_FHEQ>Various))\s
         (?<ECTS>[\d.]+)
         $';
     }
@@ -270,6 +305,10 @@ class OldFormat extends BaseParser
 
         $fields = array_only($array, $fields);
 
+        foreach ($fields as &$value) {
+            $value = is_string($value) ? trim(preg_replace('/\s+/', ' ', $value)) : $value;
+        }
+
         if (@$fields['Various_Hours'] == 'Various') {
             $fields['Learning_Hours'] = '(various)';
             $fields['Placement_Hours'] = '(various)';
@@ -277,6 +316,12 @@ class OldFormat extends BaseParser
         }
 
         if (@$fields['Various_Assessment'] == 'Various') {
+            $fields['Written_Exam'] = '(various)';
+            $fields['Coursework'] = '(various)';
+            $fields['Practical'] = '(various)';
+        }
+
+        if (@$fields['Various_Assessment_FHEQ'] == 'Various') {
             $fields['Written_Exam'] = '(various)';
             $fields['Coursework'] = '(various)';
             $fields['Practical'] = '(various)';
@@ -293,17 +338,16 @@ class OldFormat extends BaseParser
             unset($fields['Elective']);
         }
         elseif (preg_match('/ELECTIVE \((.+)\)/', $fields['Elective'], $match)) {
-            $fields['Elective_Group'] = $match[1];
+            $fields['Elective_Group'] = $this->splitOr($match[1]);
             $fields['Elective'] = true;
             $fields['Core'] = false;
         }
 
+        $fields['Year'] = $this->splitOr($fields['Year']);
+
         unset($fields['Various_Hours']);
         unset($fields['Various_Assessment']);
-
-        foreach ($fields as &$value) {
-            $value = is_string($value) ? trim(preg_replace('/\s+/', ' ', $value)) : $value;
-        }
+        unset($fields['Various_Assessment_FHEQ']);
 
         return $fields;
     }
@@ -323,7 +367,7 @@ class OldFormat extends BaseParser
         return '/\s*\b(either|or|and|,|;)\b:?\s*/i';
     }
 
-    protected function readModuleWeightingSection($lines)
+    protected function readModuleWeightingSection(array $lines = [])
     {
         $weightings = [];
         $buffer = [];
@@ -378,9 +422,9 @@ class OldFormat extends BaseParser
                         $module['Approximate'] = true;
                     }
 
-                    if (preg_match($this->getListSeparatorsRegex(), $module['Module'])) {
-                        $module['Options'] = array_values   (array_filter(preg_split($this->getListSeparatorsRegex(), $module['Module'])));
-                    }
+                    // if (preg_match($this->getListSeparatorsRegex(), $module['Module'])) {
+                    //     $module['Options'] = array_values(array_filter(preg_split($this->getListSeparatorsRegex(), $module['Module'])));
+                    // } //TODO
 
                     if ($match['Each']) {
                         $module['Each'] = true;
@@ -414,8 +458,35 @@ class OldFormat extends BaseParser
 
         $unknown = array_filter($unknown);
 
-        foreach ($unknown as $year => $lines) {
-            $weightings[$year]['Unknown'] = $lines;
+        foreach ($unknown as $year => &$lines) {
+            $notes = [];
+
+            foreach ($lines as &$line) {
+                if (preg_match('/^(\*+)(.*)$/', $line, $matches)) {
+                    $notes[$year] = [
+                        'Marker' => $matches[1],
+                        'Note'   => $matches[2],
+                    ];
+                    $line = null;
+                }
+            }
+
+            $lines = array_values(array_filter($lines));
+
+            if (count($lines)) {
+                $weightings[$year]['Unknown'] = $lines;
+            }
+
+            if (count($notes)) {
+                $weightings[$year]['Notes'] = $notes;
+            }
+
+        }
+
+        $unknown = array_filter($unknown);
+
+        if (!empty($unknown)) {
+            $this->reportUnknown('Module_Weighting', $unknown);
         }
 
         return $weightings;

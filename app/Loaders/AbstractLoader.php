@@ -6,6 +6,7 @@ abstract class AbstractLoader
 {
     protected $path;
     protected $details = [];
+    protected $links = [];
     protected $text;
 
     public static function load($path)
@@ -25,6 +26,11 @@ abstract class AbstractLoader
         $this->details = $details;
     }
 
+    public function setLinks(array $links)
+    {
+        $this->links = $links;
+    }
+
     public function setText($text)
     {
         $this->text = $text;
@@ -38,6 +44,11 @@ abstract class AbstractLoader
     public function getDetails()
     {
         return $this->details;
+    }
+
+    public function getLinks()
+    {
+        return $this->links;
     }
 
     public function getText()

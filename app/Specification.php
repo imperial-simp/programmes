@@ -97,7 +97,7 @@ class Specification extends Model
         $parser = $this->getParser();
         $this->contents = $parser->read()->output();
         $this->parsed_at = $this->freshTimestamp();
-        
+
         $this->save();
 
         return $parser;
@@ -119,7 +119,7 @@ class Specification extends Model
             $parser = $this->parser;
             if (class_exists($parser)) {
                 if ($parser::identify($loader->getText(), $loader->getDetails())) {
-                    return new $parser($this, $loader->getText(), $loader->getDetails());
+                    return new $parser($this, $loader->getText(), $loader->getDetails(), $loader->getLinks());
                 }
             }
         }
@@ -131,7 +131,7 @@ class Specification extends Model
                 if ($parser::identify($loader->getText(), $loader->getDetails())) {
                     $this->parser = $parser;
                     $this->save();
-                    return new $parser($this, $loader->getText(), $loader->getDetails());
+                    return new $parser($this, $loader->getText(), $loader->getDetails(), $loader->getLinks());
                 }
             }
         }

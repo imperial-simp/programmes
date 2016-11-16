@@ -2,6 +2,8 @@
 
 namespace Imperial\Simp\Loaders;
 
+use Smalot\PdfParser\Document as PdfDocument;
+
 class PdfLoader extends AbstractLoader
 {
 
@@ -11,6 +13,30 @@ class PdfLoader extends AbstractLoader
         $pdf = app('parser.pdf')->parseFile($this->path);
         $this->setDetails($pdf->getDetails());
         $this->setText($this->tidyText($pdf->getText()));
+        $this->setLinks($this->findLinks($pdf));
+    }
+
+    public function findLinks($pdf)
+    {
+        $links = [];
+
+        if ($pdf instanceof PdfDocument) {
+
+            $objs = $pdf->getObjects();
+            foreach ($objs as $name => $obj) {
+                if ($obj->getHeader()->has('A')) {
+                    $a = $obj->getHeader()->get('A');
+                    if ($a->has('URI')) {
+                        $link = $a->get('URI');
+                        $links[] = $link->getContent();
+                    }
+                }
+            }
+
+            return array_values(array_unique($links));
+        }
+
+        return $links;
     }
 
     public function tidyText($text)
@@ -34,6 +60,7 @@ class PdfLoader extends AbstractLoader
             '/(([A-Z])[a-z]+)\s+(([A-Z])[a-z]+) \(([A-Z]*\2\4)\)/m' => '$1 $3 ($5)',
             '/ {2,}/' => ' ',
             '/^\s+$/m' => '',
+            '/(^\n+)/m' => '',
             '/%+/' => '%',
             '/\( /' => '(',
             '%(?<!http://)www\.%s' => 'http://www.',
@@ -54,13 +81,15 @@ class PdfLoader extends AbstractLoader
                     'Postgrad' => [
                         'MEdFormat',
                         'NewFormat',
+                        'StreamsOldFormat',
                         'OldFormat',
                     ],
                     'Undergrad' => [
                         'NewFormat',
                         'BscLfsFormat',
                         'BEngBiomedFormat',
-                        'AssociateshipLaterOldFormat',
+                        // 'AssociateshipLaterOldFormat',
+                        'StreamsOldFormat',
                         'OldFormat',
                     ],
                 ],
