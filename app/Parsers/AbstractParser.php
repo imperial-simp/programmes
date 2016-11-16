@@ -10,6 +10,7 @@ abstract class AbstractParser
 {
     protected $specification;
     protected $text;
+    protected $documentTitle = [];
     protected $details = [];
     protected $links = [];
     protected $errors = [];
@@ -96,6 +97,7 @@ abstract class AbstractParser
     public function output()
     {
         $return = [
+            'Document_Title' => $this->documentTitle,
             'Specification' => $this->lines,
         ];
 
@@ -195,6 +197,11 @@ abstract class AbstractParser
         }
 
         return $val;
+    }
+
+    protected function stringKeys(array $array)
+    {
+        return array_only($array, array_filter(array_keys($array), 'is_string'));
     }
 
 }

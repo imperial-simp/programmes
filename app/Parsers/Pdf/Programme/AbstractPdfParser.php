@@ -8,6 +8,8 @@ abstract class AbstractPdfParser extends BaseParser
 {
     public function read()
     {
+        $this->getDocumentTitle();
+
         $this->lines = $this->splitSections($this->lines, $this->getSections());
 
         foreach ($this->lines as $heading => &$lines) {
@@ -32,7 +34,22 @@ abstract class AbstractPdfParser extends BaseParser
         return $this;
     }
 
-    public function splitSections(array $lines, array $sectionHeadings)
+    protected function getDocumentTitle()
+    {
+        if (!count($this->documentTitle)) {
+            foreach ($this->lines as $i => &$line) {
+                if ($i >= 5) {
+                    break;
+                }
+                if (preg_match('/^[BM](Eng|Sc ?i?).*/', $line)) {
+                    $this->documentTitle[] = trim($line);
+                    $line = null;
+                }
+            }
+        }
+    }
+
+    protected function splitSections(array $lines, array $sectionHeadings)
     {
         $sections = [];
         // $buffer = [];
@@ -44,13 +61,6 @@ abstract class AbstractPdfParser extends BaseParser
             $line = trim($line);
 
             if ($line) {
-
-                if (!isset($sections['Document_Title'])) {
-                    if (preg_match('/^[BM](Eng|Sc ?i?).*/', $line)) {
-                        $sections['Document_Title'] = $line;
-                        continue;
-                    }
-                }
 
                 // $m = null; //TODO
                 //
@@ -84,6 +94,10 @@ abstract class AbstractPdfParser extends BaseParser
                     // $buffer[] = $line;
                 }
             }
+        }
+
+        if(empty(@$sections[$this->slug($sectionHeading)])) {
+            array_unshift($sectionHeadings, $this->slug($sectionHeading));
         }
 
         // if ($lastHeading) {

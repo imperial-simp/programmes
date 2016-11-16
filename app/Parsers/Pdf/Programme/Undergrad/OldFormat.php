@@ -69,7 +69,15 @@ class OldFormat extends BaseParser
 
         asort($order);
 
-        return array_keys($order);
+        $order = array_keys($order);
+
+        $missing = array_diff($headings, $order);
+
+        if (count($missing)) {
+            $this->reportMissing('Headings', $missing);
+        }
+
+        return $order;
 
     }
 
@@ -202,7 +210,7 @@ class OldFormat extends BaseParser
         foreach ($lines as $i => &$line) {
             if (!in_array($line, ['Module List', 'Module Table Header', 'Indicative Module List'], true)) {
 
-                if (isset($lines[$i+1]) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
+                if (isset($lines[$i+1]) && !preg_match($this->getModuleFiguresRegex(), $line) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
                     $modules[] = $module;
                     $lines[$i+1] = null;
                 }
@@ -256,9 +264,9 @@ class OldFormat extends BaseParser
     {
         return '^
         (?<Code>[^\s]+)\s
-        (?<Title>.{5,80}?)\s
+        (?<Title>[^%]{5,100}?)\s
         (?<Elective>CORE\*?|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
-        (?<Year>(?:\d|\d(?:\sor\s|/)\d))\s
+        (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
         (?:(?<Learning_Hours>[\d.]+)\s
         (?<Indiv_Study_Hours>[\d.]+)\s
         (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various))\s
@@ -269,6 +277,11 @@ class OldFormat extends BaseParser
         (?<FHEQ>\d)|(?<Various_Assessment_FHEQ>Various))\s
         (?<ECTS>[\d.]+)
         $';
+    }
+
+    public function getModuleFiguresRegex()
+    {
+        return '/(\d+%? ){6,}/';
     }
 
     protected function readModule($line)
@@ -303,9 +316,12 @@ class OldFormat extends BaseParser
 
     protected function getModuleKeys(array $array)
     {
-        $fields = array_filter(array_keys($array), 'is_string');
+        $string = $array[0];
 
-        $fields = array_only($array, $fields);
+        // $fields = array_filter(array_keys($array), 'is_string');
+        // $fields = array_only($array, $fields);
+
+        $fields = $this->stringKeys($array);
 
         foreach ($fields as &$value) {
             $value = is_string($value) ? trim(preg_replace('/\s+/', ' ', $value)) : $value;
@@ -351,12 +367,31 @@ class OldFormat extends BaseParser
         unset($fields['Various_Assessment']);
         unset($fields['Various_Assessment_FHEQ']);
 
+        if (in_array($fields['Code'],  ['N/A', 'TBC', 'TBA'], true)) {
+            $fields['Code'] = null;
+            $fields['No_Code'] = true;
+        }
+        else {
+            $fields['Code'] = $this->splitOr($fields['Code']);
+        }
+
+        $fields['_String'] = $string;
+
         return $fields;
     }
 
     public function getModuleWeightingRegex()
     {
-        return '/^(?<Module>(?:(?<Count>(?:[0-9]+|[Oo]ne|[Tt](?:wo|hree)|[Ff](?:our|ive)|[Ss](?:ix|even)|[Ee]ight))(?: [x×])? (?<Unit>[Dd]ay|[Hh]our|[Ww]eek|[Mm]onth|[Mm]odule)s?|[A-Z])(?<Options>[^%]+?))(?<Weighting>[\d\.]+ ?r? ?%)(?<Each>\s*(?:each)?) ?$/sm';
+        return '@^
+        (?<Module>
+        (?:(?<Count>(?:[0-9]+|one|t(?:wo|hree)|f(?:our|ive)|s(?:ix|even)|eight|nine|ten))
+        (?:\s[x×])?\s(?<Unit>day|hour|week|month|module)s?)?
+        (?<Options>[^%]+?)
+        )
+        (?<Weighting>(?:[\d\.]+\s?r?\s?%|N/A))
+        (?<Each>\s*(?:each)?)
+        (?<Note>\**)
+        $@ismx';
     }
 
     public function getModuleWeightingYearRegex()
@@ -391,7 +426,6 @@ class OldFormat extends BaseParser
 
                 $lastYear = $matches['Year'];
                 $weightings[$this->slug($lastYear)]['Weighting'] = $matches['Weighting'];
-
             }
             else {
                 if ($line != 'Module Weighting') {
@@ -411,10 +445,16 @@ class OldFormat extends BaseParser
             if (preg_match_all($moduleRegex, $modules, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
 
+                    $string = $match[0];
+
                     $module = [
                       'Module' => trim(preg_replace('/\s+/', ' ', $match['Module'])),
                       'Weighting' => $match['Weighting'],
                     ];
+
+                    if ($match['Note']) {
+                        $module['Note'] = $match['Note'];
+                    }
 
                     if (preg_match('/([\d.]+)r%/', $module['Weighting'], $found)) {
                         $module['Weighting'] = $found[1].'%';
@@ -424,9 +464,10 @@ class OldFormat extends BaseParser
                         $module['Approximate'] = true;
                     }
 
-                    // if (preg_match($this->getListSeparatorsRegex(), $module['Module'])) {
-                    //     $module['Options'] = array_values(array_filter(preg_split($this->getListSeparatorsRegex(), $module['Module'])));
-                    // } //TODO
+                    if (preg_match('/^EITHER: (.*)/', $module['Module'])) {
+                        $module['Either_Or'] = true;
+                        $module['Options'] = array_values(array_filter(preg_split($this->getListSeparatorsRegex(), $module['Module'])));
+                    }
 
                     if ($match['Each']) {
                         $module['Each'] = true;
@@ -442,6 +483,8 @@ class OldFormat extends BaseParser
                         }
                     }
 
+                    $module['_String'] = $string;
+
                     $year['Modules'][] = $module;
                 }
             }
@@ -452,6 +495,7 @@ class OldFormat extends BaseParser
 
         unset($year);
 
+
         foreach ($unknown as $year => &$modules) {
             $modules = array_filter(explode(PHP_EOL, trim($modules)));
         }
@@ -460,12 +504,13 @@ class OldFormat extends BaseParser
 
         $unknown = array_filter($unknown);
 
+        $notes = [];
+
         foreach ($unknown as $year => &$lines) {
-            $notes = [];
 
             foreach ($lines as &$line) {
                 if (preg_match('/^(\*+)(.*)$/', $line, $matches)) {
-                    $notes[$year] = [
+                    $notes[$year][] = [
                         'Marker' => $matches[1],
                         'Note'   => $matches[2],
                     ];
@@ -479,8 +524,8 @@ class OldFormat extends BaseParser
                 $weightings[$year]['Unknown'] = $lines;
             }
 
-            if (count($notes)) {
-                $weightings[$year]['Notes'] = $notes;
+            foreach ($notes as $year => $note) {
+                $weightings[$year]['Notes'] = $note;
             }
 
         }

@@ -42,8 +42,13 @@ class ParseSpecificationJob implements ShouldQueue
         Storage::put('specs/txt/'.$this->specification->file.'.txt', $parser->getRawText());
 
         if (count($parser->getErrors())) {
-            echo 'The following warnings were encountered when attempting to parse the file:'.PHP_EOL;
+            echo 'The following warnings were encountered when attempting to parse the file'.PHP_EOL;
+            echo '  "'.$this->specification->file.'":'.PHP_EOL;
             var_dump($parser->getErrors());
+        }
+        else {
+            echo 'Successfully parsed the file'.PHP_EOL;
+            echo '  "'.$this->specification->file.'".'.PHP_EOL;
         }
     }
 }

@@ -9,7 +9,7 @@ class NewFormat extends BaseParser
 
     public static function identifyParser($text, $details = [])
     {
-        return parent::identifyParser($text) && preg_match('/(Assessment Dates & Deadlines).*(Indicative Module List)/s', $text);
+        return preg_match('/^Programme Specification \(Master.*(Programme Structure).*(Assessment Dates & Deadlines)/s', $text);
     }
 
 }

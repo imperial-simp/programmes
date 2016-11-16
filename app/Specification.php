@@ -95,6 +95,11 @@ class Specification extends Model
     public function parse()
     {
         $parser = $this->getParser();
+
+        if (str_is('*Postgrad*', get_class($parser))) {
+            throw new \Exception("Postgrad parser not ready.");
+        }
+
         $this->contents = $parser->read()->output();
         $this->parsed_at = $this->freshTimestamp();
 
