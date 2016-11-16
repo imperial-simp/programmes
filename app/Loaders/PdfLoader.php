@@ -48,7 +48,7 @@ class PdfLoader extends AbstractLoader
             '/(\x{2022} .*)\n([a-z])/um' => '$1 $2',
             '/\x{2019}/u' => '\'',
             '/&#34/' => '"',
-            '/&#34/' => '\'',
+            '/&#39/' => '\'',
             '/\x{2013}/u' => '-',
             '/ ([,-])/' => '$1',
             '/\n([a-z])/' => '$1',
@@ -89,6 +89,7 @@ class PdfLoader extends AbstractLoader
                     ],
                     'Undergrad' => [
                         'NewFormat',
+                        'MultiProgrammeFormat',
                         'TotalMarksFormat',
                         'BscLfsFormat',
                         'BEngBiomedFormat',

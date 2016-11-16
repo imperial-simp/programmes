@@ -8,6 +8,7 @@ class OldFormat extends BaseParser
 {
     protected $tidyReplacements = [
         '/Programme Specification \(Undergraduate\)/' => '',
+        '/Person\(s\) responsible/' => 'Person responsible',
     ];
 
     public static function identifyParser($text, $details = [])
@@ -139,15 +140,15 @@ class OldFormat extends BaseParser
             if (preg_match('/( (at|see): )?(http:|www\.)/', $line)) {
                 $line = preg_replace('/^The ((College|programme)\'s |programme is consistent with the )?/', '', $line);
                 $line = preg_replace('/((which )?(can be found|is( available)?) at| see):/', '__AT__', $line);
-                $line = preg_replace('/Imperial College is an independent corporation/', 'College Charter__AT__', $line);
-                $line = preg_replace('/Imperial College London is regulated by the Higher Education Funding Council for England \(HEFCE\)/', 'HEFCE__AT__', $line);
+                $line = preg_replace('/Imperial College is an independent corporation.*www\./', 'College Charter__AT__http://www.', $line);
+                $line = preg_replace('/.*Higher Education Funding Council for England \(HEFCE\)/', 'HEFCE__AT__', $line);
 
                 $line = explode('__AT__', $line);
 
                 $line = array_map('trim', $line);
 
                  if (count($line) == 2) {
-                    $info[$this->slug($line[0])] = $line[1];
+                    $info[$this->slug($line[0])] = str_replace(' ', '', $line[1]);
                 }
                 else {
                     $info[] = implode(PHP_EOL, $line);
@@ -267,7 +268,7 @@ class OldFormat extends BaseParser
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
         (?<Title>[^%]{5,100}?)\s
-        (?<Elective>CORE\*?|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
+        (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
         (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
         (?:(?<Learning_Hours>[\d.]+)\s
         (?<Indiv_Study_Hours>[\d.]+)\s
@@ -286,11 +287,27 @@ class OldFormat extends BaseParser
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
         (?<Title>[^%]{5,100}?)\s
-        (?<Elective>CORE\*?|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
+        (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
         (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
         (?<Various_All>Various)\s
         (?<FHEQ>\d)\s
         (?<ECTS>[\d.]+)
+        $';
+    }
+
+    public function getNotAssessedModuleRegex()
+    {
+        return '^
+        (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
+        (?<Title>[^%]{5,100}?)\s
+        (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
+        (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
+        (?:(?<Learning_Hours>[\d.]+)\s
+        (?<Indiv_Study_Hours>[\d.]+)\s
+        (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various))\s
+        (?<Total_Hours>[\d.]+)\s
+        (?<Not_Assessed>(?:Not\sassessed|N/A))
+        (?<ECTS>\s0(?:\.00)?)?
         $';
     }
 
@@ -301,16 +318,19 @@ class OldFormat extends BaseParser
 
     protected function readModule($line)
     {
-        $regex = '@'.$this->getModuleRegex().'@simx';
 
-        if (preg_match($regex, $line, $matches)) {
-            return $this->getModuleKeys($matches);
-        }
+        $regexes = [
+            $this->getModuleRegex(),
+            $this->getVariousAllModuleRegex(),
+            $this->getNotAssessedModuleRegex(),
+        ];
 
-        $regex = '@'.$this->getVariousAllModuleRegex().'@simx';
+        foreach ($regexes as $regex) {
+            $regex = '@'.$regex.'@simx';
 
-        if (preg_match($regex, $line, $matches)) {
-            return $this->getModuleKeys($matches);
+            if (preg_match($regex, $line, $matches)) {
+                return $this->getModuleKeys($matches);
+            }
         }
     }
 
@@ -345,7 +365,7 @@ class OldFormat extends BaseParser
             $value = is_string($value) ? trim(preg_replace('/\s+/', ' ', $value)) : $value;
         }
 
-        if (@$fields['Various_All'] == 'Various') {
+        if (trim(@$fields['Various_All'])) {
             $fields['Learning_Hours'] = '(various)';
             $fields['Placement_Hours'] = '(various)';
             $fields['Indiv_Study_Hours'] = '(various)';
@@ -353,6 +373,13 @@ class OldFormat extends BaseParser
             $fields['Written_Exam'] = '(various)';
             $fields['Coursework'] = '(various)';
             $fields['Practical'] = '(various)';
+        }
+        if (trim(@$fields['Not_Assessed'])) {
+            $fields['Written_Exam'] = '(not assessed)';
+            $fields['Coursework'] = '(not assessed)';
+            $fields['Practical'] = '(not assessed)';
+            $fields['FHEQ'] = '(not assessed)';
+            $fields['ECTS'] = '(not assessed)';
         }
         else {
 
@@ -377,7 +404,7 @@ class OldFormat extends BaseParser
 
         }
 
-        if (preg_match('/^(.*)(\*+)$/', $fields['Elective'], $matches)) {
+        if (preg_match('/^([^\*]+)(\*+)$/', $fields['Elective'], $matches)) {
             $fields['Elective'] = $matches[1];
             $fields['Note'] = $matches[2];
         }

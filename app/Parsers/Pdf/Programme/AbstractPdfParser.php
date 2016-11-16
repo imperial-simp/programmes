@@ -77,12 +77,15 @@ abstract class AbstractPdfParser extends BaseParser
         }
 
         if(empty(@$sections[$this->slug($sectionHeading)])) {
-            array_unshift($sectionHeadings, $this->slug($sectionHeading));
+            array_unshift($sectionHeadings, $sectionHeading);
         }
 
         $sectionHeadings = array_values(array_filter($sectionHeadings));
 
         if (count($sectionHeadings)) {
+            foreach ($sectionHeadings as &$sectionHeading) {
+                $sectionHeading = $this->slug($sectionHeading);
+            }
             $this->reportMissing('Sections', $sectionHeadings);
         }
 
@@ -144,7 +147,18 @@ abstract class AbstractPdfParser extends BaseParser
             }
         }
 
-        $this->reportMissing($heading, $sectionFields);
+        if(empty(@$fields[$this->slug($sectionField)])) {
+            array_unshift($sectionFields, $sectionField);
+        }
+
+        $sectionFields = array_values(array_filter($sectionFields));
+
+        if (count($sectionFields)) {
+            foreach ($sectionFields as &$sectionField) {
+                $sectionField = $this->slug($sectionField);
+            }
+            $this->reportMissing($heading, $sectionFields);
+        }
 
         return $fields;
     }
