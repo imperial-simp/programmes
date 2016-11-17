@@ -10,6 +10,7 @@ abstract class AbstractPdfParser extends AbstractParser
 
     protected function afterSetText()
     {
+        $this->text = preg_replace('/ {2,}/', ' ', $this->text);
         $this->lines = explode(PHP_EOL, $this->text);
     }
 

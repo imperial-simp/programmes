@@ -62,7 +62,7 @@ class OldFormat extends BaseParser
 
         foreach ($lines as $ln => $line) {
             foreach ($headings as $heading) {
-                if (preg_match('#^('.$heading.').*#', $line)) {
+                if (preg_match('#^('.$heading.').*#i', $line)) {
                     $order[$heading] = $ln;
                 }
             }
@@ -272,12 +272,12 @@ class OldFormat extends BaseParser
         (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
         (?:(?<Learning_Hours>[\d.]+)\s
         (?<Indiv_Study_Hours>[\d.]+)\s
-        (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various))\s
+        (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various|Variable))\s
         (?<Total_Hours>[\d.]+)\s
         (?:(?:(?<Written_Exam>[\d.]+%?)\s
         (?<Coursework>[\d.]+%?)\s
-        (?<Practical>[\d.]+%?)|(?<Various_Assessment>Various))\s
-        (?<FHEQ>\d)|(?<Various_Assessment_FHEQ>Various))\s
+        (?<Practical>[\d.]+%?)|(?<Various_Assessment>Various|Variable))\s
+        (?<FHEQ>\d)|(?<Various_Assessment_FHEQ>Various|Variable))\s
         (?<ECTS>[\d.]+)
         $';
     }
@@ -289,7 +289,7 @@ class OldFormat extends BaseParser
         (?<Title>[^%]{5,100}?)\s
         (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
         (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
-        (?<Various_All>Various)\s
+        (?<Various_All>Various|Variable)\s
         (?<FHEQ>\d)\s
         (?<ECTS>[\d.]+)
         $';
@@ -307,7 +307,7 @@ class OldFormat extends BaseParser
         (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various))\s
         (?<Total_Hours>[\d.]+)\s
         (?<Not_Assessed>(?:Not\sassessed|N/A))
-        (?<ECTS>\s0(?:\.00)?)?
+        (?:\sN/A|\s0(?:\.00)?)*
         $';
     }
 
@@ -374,7 +374,7 @@ class OldFormat extends BaseParser
             $fields['Coursework'] = '(various)';
             $fields['Practical'] = '(various)';
         }
-        if (trim(@$fields['Not_Assessed'])) {
+        elseif (trim(@$fields['Not_Assessed'])) {
             $fields['Written_Exam'] = '(not assessed)';
             $fields['Coursework'] = '(not assessed)';
             $fields['Practical'] = '(not assessed)';
@@ -382,7 +382,6 @@ class OldFormat extends BaseParser
             $fields['ECTS'] = '(not assessed)';
         }
         else {
-
             if (@$fields['Various_Hours'] == 'Various') {
                 $fields['Learning_Hours'] = '(various)';
                 $fields['Placement_Hours'] = '(various)';
@@ -419,7 +418,9 @@ class OldFormat extends BaseParser
             $fields['Core'] = false;
         }
 
-        $fields['Year'] = $this->splitOr($fields['Year']);
+        if (isset($fields['Year'])) {
+            $fields['Year'] = $this->splitOr($fields['Year']);
+        }
 
         unset($fields['Various_All']);
         unset($fields['Various_Hours']);
@@ -624,6 +625,13 @@ class OldFormat extends BaseParser
         }
 
         return $weightings;
+    }
+
+    public function readExternalAccreditorsField(array $lines = [])
+    {
+        $lines = implode(', ', $lines);
+
+        return explode(', ', $lines);
     }
 
 }

@@ -198,7 +198,7 @@ abstract class AbstractPdfParser extends BaseParser
         $text = preg_replace(array_keys($replacements), array_values($replacements), $text);
 
         $headerReplacements = [
-            'Code Title Core/ Elective Year L&T Hours Ind. Study Hours Place-? ment Hours Total Hours % Written Exam % Course-? work % Practical FHEQ Level ECTS' =>
+            'Code Title Core/ Elective( Year)? L&T Hours Ind. Study Hours Place-? ment Hours Total Hours % Written Exam % Course-? work % Practical FHEQ Level ECTS' =>
             'Module Table Header',
             'Qualifications Framework of the European Higher Education Area' => 'Qualifications Framework of the European Higher Education Area',
             'Year % Year Weighting Total Marks Available Module Total Marks Available' => 'Module Total Marks Weighting',

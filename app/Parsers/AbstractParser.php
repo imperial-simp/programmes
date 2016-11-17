@@ -120,6 +120,7 @@ abstract class AbstractParser
     protected function slug($title)
     {
         $title = preg_replace(['/ ?& ?/', '% ?[/|] ?%'], [' and ', ' or '], $title);
+        $title = str_replace(['-', '_'], ' ', $title);
 
         $title = \Illuminate\Support\Str::ascii($title);
         $title = preg_replace('![^\pL\pN\s]+!u', '', $title);
@@ -132,7 +133,12 @@ abstract class AbstractParser
         //     $title = preg_replace('/_('.$word.')_/', '_'.strtolower($word).'_', $title);
         // }
 
-        $title = str_replace('Elearning', 'eLearning', $title);
+        $replacements = [
+            'Re_Sit' => 'Resit',
+            'Elearning' => 'eLearning',
+        ];
+
+        $title = str_replace(array_keys($replacements), array_values($replacements), $title);
 
         return trim($title, '_');
     }
