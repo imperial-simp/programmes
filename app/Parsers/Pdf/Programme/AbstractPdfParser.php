@@ -104,17 +104,49 @@ abstract class AbstractPdfParser extends BaseParser
 
             if ($line) {
 
-                if ($sectionField && preg_match('#^('.$sectionField.')$#i', $line)) {
+                if (is_array($sectionField)) {
+                    $sectionFieldRegex = implode('|', $sectionField);
+                }
+                else {
+                    $sectionFieldRegex = $sectionField;
+                }
+
+                if ($sectionField && preg_match('#^('.$sectionFieldRegex.')$#i', $line, $match)) {
+
+                    if (is_array($sectionField)) {
+                        foreach ($sectionField as $field) {
+                            if (preg_match('#^('.$field.')$#i', $match[0])) {
+                                $sectionField = $field;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (is_array($sectionField)) {
+                        $sectionField = head($sectionField);
+                    }
 
                     $lastField = $sectionField;
                     $sectionField = array_shift($sectionFields);
                 }
-                elseif ($sectionField && preg_match('#^('.$sectionField.')(.+)$#i', $line, $matches)) {
+                elseif ($sectionField && preg_match('#^('.$sectionFieldRegex.')(.+)$#i', $line, $matches)) {
+
+                    if (is_array($sectionField)) {
+                        foreach ($sectionField as $field) {
+                            if (preg_match('#^('.$field.')$#i', $matches[1])) {
+                                $sectionField = $field;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (is_array($sectionField)) {
+                        $sectionField = head($sectionField);
+                    }
 
                     $fields[$this->slug($sectionField)][] = $this->transformValue(trim($matches[2]), $heading, $this->slug($sectionField));
                     $lastField = $sectionField;
                     $sectionField = array_shift($sectionFields);
-
                 }
                 else {
                     if ($lastField) {
@@ -198,14 +230,20 @@ abstract class AbstractPdfParser extends BaseParser
         $text = preg_replace(array_keys($replacements), array_values($replacements), $text);
 
         $headerReplacements = [
+            '\bF H E Q\b' => 'FHEQ',
+            '\bE C T S\b' => 'ECTS',
             'Code Title Core/ Elective( Year)? L&T Hours Ind. Study Hours Place-? ment Hours Total Hours % Written Exam % Course-? work % Practical FHEQ Level ECTS' =>
             'Module Table Header',
             'Qualifications Framework of the European Higher Education Area' => 'Qualifications Framework of the European Higher Education Area',
+            'Year % Year Weighting (Element Module|Assessment Element / Module) Mark Weighting Total Marks' => 'Module Element Total Marks Weighting',
             'Year % Year Weighting Total Marks Available Module Total Marks Available' => 'Module Total Marks Weighting',
             'Year % Year Weighting Module % Module Weighting' => 'Module Weighting',
             'Module % Module Weighting' => 'Module Weighting',
-            'The (?:programme\'s )?competency standards .* at:' => 'Competency Standards',
-            '(?:Re-sit Policy )?The College\'s Policy on Re-sits is available at:' => 'Resit Policy',
+            '^(?:.*) with Science Education Teacher Training Placements$' => 'Teacher Training Placement Timing',
+            'The (?:programme \' s )?competency standards .* at:' => 'Competency Standards',
+            '(?:Re-sit Policy )?The College\'s Policy on Re-sits is a v a i l a b l e at:' => 'Resit Policy',
+            '\bE L E C T I V E\b' => 'ELECTIVE',
+            '\bC O R E\b' => 'CORE',
             '(?:Mitigating Circumstances Policy )?The College\'s Policy on Mitigating Circumstances is available at:' => PHP_EOL.'Mitigating Circumstances Policy',
         ];
 

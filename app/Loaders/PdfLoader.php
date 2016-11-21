@@ -55,7 +55,7 @@ class PdfLoader extends AbstractLoader
             '/ (and|in|or|of|to|with|at|the|an?|for|including|by|using|according|prior|ensure|within|if|do|did|is|has|&) ?$\n/m' => ' $1 ',
             '@(?<![a-z])/ ?$\n@m' => '/',
             '/\( ?$\n/m' => '(',
-            '/\n^\(/m' => '(',
+            '/\n^([(,])/m' => '$1',
             '/ \)/' => ')',
             '/\(([^\)\n]+)$\n/m' => '($1 ',
             '/\n^([^\(\n\d]+)\)/m' => ' $1)',
@@ -66,6 +66,7 @@ class PdfLoader extends AbstractLoader
             '/(^\n+)/m' => '',
             '/%+/' => '%',
             '/\( /' => '(',
+            '/-\n/' => '-',
             '%(?<!http://)www\.%s' => 'http://www.',
         ];
 
@@ -90,11 +91,12 @@ class PdfLoader extends AbstractLoader
                     'Undergrad' => [
                         'NewFormat',
                         'MultiProgrammeFormat',
+                        'ElementTotalMarksFormat',
                         'TotalMarksFormat',
                         'BscLfsFormat',
                         'BEngBiomedFormat',
-                        // 'AssociateshipLaterOldFormat',
                         'StreamsOldFormat',
+                        'TeacherTrainingOldFormat',
                         'OldFormat',
                     ],
                 ],

@@ -117,6 +117,8 @@ class Specification extends Model
             $loader = HtmlLoader::load($this->path);
         }
         else {
+            $this->parser = 'UNKNOWN';
+            $this->save();
             throw new Exception(sprintf('Cannot identify loader for MIME type %s.', $this->mime));
         }
 
@@ -141,7 +143,7 @@ class Specification extends Model
             }
         }
 
-        $this->parser = null;
+        $this->parser = 'UNKNOWN';
         $this->save();
 
         throw new Exception(sprintf('Cannot identify parser for specification [%s].', $this->id));

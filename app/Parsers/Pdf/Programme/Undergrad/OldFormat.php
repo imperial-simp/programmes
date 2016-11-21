@@ -82,6 +82,15 @@ class OldFormat extends BaseParser
 
     }
 
+    public function readRelevantQAABenchmarkStatementsField(array $lines = [])
+    {
+        $lines = array_filter($lines, function($line) {
+            return 'and/or other external reference points' != $line;
+        });
+
+        return array_values($lines);
+    }
+
     public function getSpecificationDetailsHeadings(array $lines = [])
     {
         return [
@@ -124,7 +133,7 @@ class OldFormat extends BaseParser
     public function getAssessmentStructureHeadings(array $lines = [])
     {
         return [
-            'Marking Scheme',
+            ['Marking Scheme', 'Rules for Progression'],
         ];
     }
 
@@ -165,7 +174,7 @@ class OldFormat extends BaseParser
         ];
 
         if (count($unknown)) {
-            $this->reportUnknown('Supporting_Information', $unknown);
+            // $this->reportUnknown('Supporting_Information', $unknown); // Other, not Unknown
             $return['Other'] = $unknown;
         }
 
@@ -274,9 +283,9 @@ class OldFormat extends BaseParser
         (?<Indiv_Study_Hours>[\d.]+)\s
         (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various|Variable))\s
         (?<Total_Hours>[\d.]+)\s
-        (?:(?:(?<Written_Exam>[\d.]+%?)\s
-        (?<Coursework>[\d.]+%?)\s
-        (?<Practical>[\d.]+%?)|(?<Various_Assessment>Various|Variable))\s
+        (?:(?:(?<Written_Exam>[\d.]+\s?%?)\s
+        (?<Coursework>[\d.]+\s?%?)\s
+        (?<Practical>[\d.]+\s?%?)|(?<Various_Assessment>Various|Variable))\s
         (?<FHEQ>\d)|(?<Various_Assessment_FHEQ>Various|Variable))\s
         (?<ECTS>[\d.]+)
         $';
@@ -313,7 +322,7 @@ class OldFormat extends BaseParser
 
     public function getModuleFiguresRegex()
     {
-        return '/(\d+%? ){6,}/';
+        return '/(\d+\s?%? ){6,}/';
     }
 
     protected function readModule($line)
@@ -382,24 +391,26 @@ class OldFormat extends BaseParser
             $fields['ECTS'] = '(not assessed)';
         }
         else {
-            if (@$fields['Various_Hours'] == 'Various') {
+            if (@$fields['Various_Hours']) {
                 $fields['Learning_Hours'] = '(various)';
                 $fields['Placement_Hours'] = '(various)';
                 $fields['Indiv_Study_Hours'] = '(various)';
             }
-
-            if (@$fields['Various_Assessment'] == 'Various') {
+            if (@$fields['Various_Assessment']) {
                 $fields['Written_Exam'] = '(various)';
                 $fields['Coursework'] = '(various)';
                 $fields['Practical'] = '(various)';
             }
-
-            if (@$fields['Various_Assessment_FHEQ'] == 'Various') {
+            if (@$fields['Various_Assessment_FHEQ']) {
                 $fields['Written_Exam'] = '(various)';
                 $fields['Coursework'] = '(various)';
                 $fields['Practical'] = '(various)';
                 $fields['FHEQ'] = '(various)';
             }
+
+                $fields['Written_Exam'] = str_replace(' ', '', $fields['Written_Exam']);
+                $fields['Coursework'] = str_replace(' ', '', $fields['Coursework']);
+                $fields['Practical'] = str_replace(' ', '', $fields['Practical']);
 
         }
 
@@ -407,8 +418,7 @@ class OldFormat extends BaseParser
             $fields['Elective'] = $matches[1];
             $fields['Note'] = $matches[2];
         }
-
-        if ($fields['Elective'] == 'CORE') {
+        elseif ($fields['Elective'] == 'CORE') {
             $fields['Core'] = true;
             unset($fields['Elective']);
         }
@@ -504,16 +514,21 @@ class OldFormat extends BaseParser
                 if (isset($matches['Total_Marks'])) {
                     $weightings[$this->slug($lastYear)]['Total_Marks'] = $matches['Total_Marks'];
                 }
+
+                if (isset($matches['Element'])) {
+                    $weightings[$this->slug($lastYear)]['Element'] = $matches['Element'];
+                }
             }
             else {
-                if ($line != 'Module Weighting') {
+                if (!in_array($line, ['Module Weighting', 'Module Element Total Marks Weighting', 'Module Total Marks Weighting'], true)) {
                     $weightings[$this->slug($lastYear)]['Modules'][] = $line;
                 }
             }
         }
-
+        // dd($weightings);
 
         foreach ($weightings as $yr => &$year) {
+
             $modules = implode(PHP_EOL, $year['Modules']);
             $year['Modules'] = [];
 
@@ -543,7 +558,7 @@ class OldFormat extends BaseParser
                     }
 
                     if (isset($module['Weighting'])) {
-                        if (preg_match('/([\d.]+)r%/', $module['Weighting'], $found)) {
+                        if (preg_match('/([\d.]+)r\s?%/', $module['Weighting'], $found)) {
                             $module['Weighting'] = $found[1].'%';
                             $module['Approximate'] = true;
                         }
