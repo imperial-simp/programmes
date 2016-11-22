@@ -116,7 +116,7 @@ class OldFormat extends BaseParser
         return [
             'Scheduled Learning & Teaching Methods',
             'E-learning & Blended Learning Methods',
-            'Project and Placement Learning Methods',
+            'Project (?:and Placement )?Learning Methods',
         ];
     }
 
@@ -199,7 +199,16 @@ class OldFormat extends BaseParser
         $value = trim($value);
 
         if ($value) {
-            $credits['Unknown'] = $value;
+            if (preg_match('/^(\*+)(.*)$/', $value, $matches)) {
+                $credits['Note'] = [
+                    'Marker' => $matches[1],
+                    'Note'   => $matches[2],
+                ];
+            }
+            else {
+                $credits['Unknown'] = $value;
+                $this->reportUnknown('Total_Credits', $value);
+            }
         }
 
         return $credits;
@@ -216,21 +225,19 @@ class OldFormat extends BaseParser
         $lines = preg_replace('/\n *(\w+) *\n/m', ' $1 ', $lines);
         $lines = preg_replace('/\n *(ELECTIVE|CORE)/m', ' $1', $lines);
         $lines = preg_replace('/^ *([A-Z0-9-]+) *\n/mi', '$1 ', $lines);
+        $lines = str_replace(['Module Table Header', 'Indicative Module List', 'Module List', ], '', $lines);
 
         $lines = explode(PHP_EOL, $lines);
 
         foreach ($lines as $i => &$line) {
-            if (!in_array($line, ['Module List', 'Module Table Header', 'Indicative Module List'], true)) {
-
-                if (isset($lines[$i+1]) && !preg_match($this->getModuleFiguresRegex(), $line) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
-                    $modules[] = $module;
-                    $lines[$i+1] = null;
-                }
-                elseif ($module = $this->readModule($line)) {
-                    $modules[] = $module;
-                } else {
-                    $unknown[] = $line;
-                }
+            if (isset($lines[$i+1]) && !preg_match($this->getModuleFiguresRegex(), $line) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
+                $modules[] = $module;
+                $lines[$i+1] = null;
+            }
+            elseif ($module = $this->readModule($line)) {
+                $modules[] = $module;
+            } else {
+                $unknown[] = $line;
             }
         }
 
@@ -250,6 +257,13 @@ class OldFormat extends BaseParser
                     'Marker' => $matches[1],
                     'Note'   => $matches[2],
                 ];
+                $line = null;
+            }
+            elseif(preg_match('/^•/', trim($line))) {
+                $last = array_pop($notes);
+                $last['Note'] = (array) $last['Note'];
+                $last['Note'][] = $line;
+                $notes[] = $last;
                 $line = null;
             }
         }
@@ -276,12 +290,12 @@ class OldFormat extends BaseParser
     {
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
-        (?<Title>[^%]{5,100}?)\s
+        (?<Title>(?:[^%]{5,100}?)|IDX)\s
         (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
-        (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
+        (?<Year>(?:\d|(?:\d,\s*)?\d(?:\sor\s|\s*/\s*)\d))\s
         (?:(?<Learning_Hours>[\d.]+)\s
         (?<Indiv_Study_Hours>[\d.]+)\s
-        (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various|Variable))\s
+        (?<Placement_Hours>(?:[\d.]+|See\s+[Bb]elow))|(?<Various_Hours>Various|Variable))\s
         (?<Total_Hours>[\d.]+)\s
         (?:(?:(?<Written_Exam>[\d.]+\s?%?)\s
         (?<Coursework>[\d.]+\s?%?)\s
@@ -295,9 +309,9 @@ class OldFormat extends BaseParser
     {
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
-        (?<Title>[^%]{5,100}?)\s
+        (?<Title>(?:[^%]{5,100}?)|IDX)\s
         (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
-        (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
+        (?<Year>(?:\d|(?:\d,\s*)?\d(?:\sor\s|\s*/\s*)\d))\s
         (?<Various_All>Various|Variable)\s
         (?<FHEQ>\d)\s
         (?<ECTS>[\d.]+)
@@ -308,9 +322,9 @@ class OldFormat extends BaseParser
     {
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s
-        (?<Title>[^%]{5,100}?)\s
+        (?<Title>(?:[^%]{5,100}?)|IDX)\s
         (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s
-        (?<Year>(?:\d|\d(?:\sor\s|\s*/\s*)\d))\s
+        (?<Year>(?:\d|(?:\d,\s*)?\d(?:\sor\s|\s*/\s*)\d))\s
         (?:(?<Learning_Hours>[\d.]+)\s
         (?<Indiv_Study_Hours>[\d.]+)\s
         (?<Placement_Hours>(?:[\d.]+|See\sbelow))|(?<Various_Hours>Various))\s
@@ -353,7 +367,9 @@ class OldFormat extends BaseParser
                 $text = str_replace($match[0], null, $text);
                 $match = $this->getModuleKeys($match);
                 $match = array_map(function($item) {
-                    return trim(preg_replace('/\s+/', ' ', $item));
+                    if (is_string($item)) {
+                        return trim(preg_replace('/\s+/', ' ', $item));
+                    }
                 }, $match);
                 $modules[] = $match;
             }
@@ -424,6 +440,11 @@ class OldFormat extends BaseParser
         }
         elseif (preg_match('/ELECTIVE \((.+)\)/', $fields['Elective'], $match)) {
             $fields['Elective_Group'] = $this->splitOr($match[1]);
+
+            if (is_string($fields['Elective_Group']) && strlen($fields['Elective_Group']) > 1 && preg_match('/^[A-G]+$/', $fields['Elective_Group'])) {
+                $fields['Elective_Group'] = str_split($fields['Elective_Group']);
+            }
+
             $fields['Elective'] = true;
             $fields['Core'] = false;
         }
@@ -445,7 +466,7 @@ class OldFormat extends BaseParser
             $fields['Code'] = $this->splitOr($fields['Code']);
         }
 
-        $fields['_String'] = $string;
+        if ($this->debug) $fields['_String'] = $string;
 
         return $fields;
     }
@@ -455,10 +476,10 @@ class OldFormat extends BaseParser
         return '@^
         (?<Module>
         (?:(?<Count>(?:[0-9]+|one|t(?:wo|hree)|f(?:our|ive)|s(?:ix|even)|eight|nine|ten))
-        (?:\s[x×])?\s(?<Unit>day|hour|week|month|module)s?)?
+        (?:\s[x×])?\s(?<Unit>day|hour|week|month|module)s?\s+(?:of)?)?
         (?<Options>[^%]+?)
         )
-        (?<Weighting>(?:[\d\.]+\s?r?\s?%|N/A))
+        (?<Weighting>(?:[\d\.]+\s?r?\s?%|N/A|\*))
         (?<Each>\s*(?:each)?)
         (?<Note>\**)
         $@ismx';
@@ -466,12 +487,12 @@ class OldFormat extends BaseParser
 
     public function getModuleWeightingYearRegex()
     {
-        return '/^(?<Year>(?:Year (?:One|Two|Three|Four|Five|Six|\d))|(?:First|1st|Second|2nd|Third|3rd|Fourth|Fifth|Sixth|[4-6]th|Final) Year) (?<Weighting>[\d\.]+ ?%)(?<Rest>.*)$/';
+        return '/^(?<Year>(?:Year (?:One|Two|Three|Four|Five|Six|\d))|(?:First|1st|Second|2nd|Third|3rd|Fourth|Fifth|Sixth|[4-6]th|Final) Year)(?:\s+\((?<Year_Remark>[^)]+)\))? (?<Weighting>[\d\.]+ ?%)(?<Rest>.*)$/';
     }
 
     public function getListSeparatorsRegex()
     {
-        return '/\s*\b(either|or|and|,|;)\b:?\s*/i';
+        return '/(?<!(?-i:[\dA-Z]))\s*+(\b(either|or|and|plus|to include|including)\b:?|[;,•])\s*+(?!(?-i:[\dA-Z]))/i';
     }
 
     protected function readModuleWeightingSection(array $lines = [])
@@ -486,9 +507,8 @@ class OldFormat extends BaseParser
         $moduleRegex = $this->getModuleWeightingRegex();
 
         $lines = implode(PHP_EOL, $lines);
-
-        $lines = preg_replace('/\n ?([\d\.]+ ?%?)/m', ' $1'.PHP_EOL, $lines);
-
+        $lines = preg_replace('/\n ?([\d\.]+ ?%?)(?=\s+\d\s+)/m', ' $1'.PHP_EOL, $lines);
+        $lines = str_replace(['Module Weighting', 'Module Element Total Marks Weighting', 'Module Total Marks Weighting'], '', $lines);
         $lines = explode(PHP_EOL, $lines);
 
         foreach ($lines as $i => &$line) {
@@ -507,22 +527,24 @@ class OldFormat extends BaseParser
 
                 $lastYear = $matches['Year'];
 
-                if (isset($matches['Weighting'])) {
+                if (@$matches['Year_Remark']) {
+                    $weightings[$this->slug($lastYear)]['Remark'] = $matches['Year_Remark'];
+                }
+
+                if (@$matches['Weighting']) {
                     $weightings[$this->slug($lastYear)]['Weighting'] = $matches['Weighting'];
                 }
 
-                if (isset($matches['Total_Marks'])) {
+                if (@$matches['Total_Marks']) {
                     $weightings[$this->slug($lastYear)]['Total_Marks'] = $matches['Total_Marks'];
                 }
 
-                if (isset($matches['Element'])) {
+                if (@$matches['Element']) {
                     $weightings[$this->slug($lastYear)]['Element'] = $matches['Element'];
                 }
             }
             else {
-                if (!in_array($line, ['Module Weighting', 'Module Element Total Marks Weighting', 'Module Total Marks Weighting'], true)) {
-                    $weightings[$this->slug($lastYear)]['Modules'][] = $line;
-                }
+                $weightings[$this->slug($lastYear)]['Modules'][] = $line;
             }
         }
         // dd($weightings);
@@ -542,7 +564,13 @@ class OldFormat extends BaseParser
                     ];
 
                     if (isset($match['Weighting'])) {
-                        $module['Weighting'] = $match['Weighting'];
+                        if ($match['Weighting'] == '*') {
+                            $module['Note'] = '*';
+                            $module['Weighting'] = '(See note)';
+                        }
+                        else {
+                            $module['Weighting'] = $match['Weighting'];
+                        }
                     }
 
                     if (isset($match['Total_Marks'])) {
@@ -567,7 +595,7 @@ class OldFormat extends BaseParser
                         }
                     }
 
-                    if (preg_match('/^EITHER: (.*)/', $module['Module'])) {
+                    if (preg_match('/(^EITHER: .*|\beither.*or\b|•|including:|to include:)/', $module['Module'])) {
                         $module['Either_Or'] = true;
                         $module['Options'] = array_values(array_filter(preg_split($this->getListSeparatorsRegex(), $module['Module'])));
                     }
@@ -579,14 +607,19 @@ class OldFormat extends BaseParser
                     if ($match['Count']) {
                         $module['Count'] = $this->numberFromWord($match['Count']);
                         $module['Unit'] = ucfirst($match['Unit']);
-                        $module['Options'] = trim($match['Options']);
 
-                        if (preg_match('/elective group \((.+)\)/i', $module['Options'], $match)) {
+                        if (!isset($module['Options'])) {
+                            $module['Options'] = ucfirst(trim($match['Options']));
+                        }
+
+                        $options = is_array($module['Options']) ? implode(' ', $module['Options']) : $module['Options'];
+
+                        if (preg_match('/elective group \((.+)\)/i', $options, $match)) {
                             $module['Elective_Group'] = $this->splitOr($match[1]);
                         }
                     }
 
-                    $module['_String'] = $string;
+                    if ($this->debug) $module['_String'] = $string;
 
                     $year['Modules'][] = $module;
                 }
@@ -610,13 +643,19 @@ class OldFormat extends BaseParser
         $notes = [];
 
         foreach ($unknown as $year => &$lines) {
-
             foreach ($lines as &$line) {
                 if (preg_match('/^(\*+)(.*)$/', $line, $matches)) {
                     $notes[$year][] = [
                         'Marker' => $matches[1],
                         'Note'   => $matches[2],
                     ];
+                    $line = null;
+                }
+                elseif(preg_match('/^•/', trim($line))) {
+                    $last = array_pop($notes[$year]);
+                    $last['Note'] = (array) $last['Note'];
+                    $last['Note'][] = $line;
+                    $notes[$year][] = $last;
                     $line = null;
                 }
             }

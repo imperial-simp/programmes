@@ -93,11 +93,12 @@ class NewFormat extends BaseParser
     {
         $string = $lines;
 
-        $findLines = str_replace(' ', '\s+', implode(' ', $lines));
-
-        if (preg_match('/'.$findLines.'/', $this->rawText, $match)) {
-            $lines = explode(PHP_EOL, $match[0]);
-        }
+        // $findLines = str_replace(' ', '\s+', implode(' ', $lines));
+        //
+        // if (preg_match('/'.$findLines.'/', $this->rawText, $match)) {
+        //     $lines = explode(PHP_EOL, $match[0]);
+        //     dd($lines);
+        // }
 
         $sectionFields = $this->getProgrammeStructureYearHeadings($lines);
 
@@ -112,38 +113,50 @@ class NewFormat extends BaseParser
 
         foreach ($lines as $year => &$yearLines) {
 
-        $yearLines = implode(PHP_EOL, $yearLines);
+            $yearLines = implode(PHP_EOL, $yearLines);
 
-        $yearLines = preg_replace('/(Spring|Summer|Autumn|Winter)\s+(Term|Period|Session)/mx', '$1_$2', $yearLines);
-        $yearLines = preg_replace('/(Term|Period|Session)\s+(One|Two|Three|Four|Five|Six|Seven|Eight\d+)/mx', '$1_$2', $yearLines);
-        $yearLines = preg_replace('/([^\s]+)\s(Module)/mx', '$1_$2', $yearLines);
+            $yearLines = preg_replace('/(Spring|Summer|Autumn|Winter)\s+(Term|Period|Session)/mx', '$1_$2', $yearLines);
+            $yearLines = preg_replace('/(Term|Period|Session)\s+(One|Two|Three|Four|Five|Six|Seven|Eight|\d+)/mx', '$1_$2', $yearLines);
+            $yearLines = preg_replace('/([^\s]+)\s(Module)/mx', '$1_$2', $yearLines);
 
-        $yearLines = explode(PHP_EOL, $yearLines);
+            $yearLines = explode(PHP_EOL, $yearLines);
 
-        $headers = [];
-        $values = [];
+            $headers = [];
+            $values = [];
 
-        foreach ($yearLines as $line) {
-            if (preg_match('/(Term|Period|Session|Pre-session)/', $line)) {
-                $headers[] = $line;
+            foreach ($yearLines as $line) {
+                if (preg_match('/(Term|Period|Session|Pre-session)/', $line)) {
+                    $line = str_replace('Pre-session', 'Pre_Session', $line);
+                    $headers = array_merge($headers, preg_split('/\s+/', $line));
+                }
+                else {
+                    $values[] = $line;
+                }
             }
-            else {
-                $values[] = $line;
+
+            $limit = count($headers);
+
+            foreach ($values as $line) {
+                $rowHeader = strstr($line.' ', ' ', true);
+                $rowValues = substr(strstr($line, ' '), 1);
+                $rowValues = preg_split('/ /', $rowValues, $limit);
+
+                foreach ($rowValues as &$rowValue) {
+                    if ($rowValue == 0) {
+                        $rowValue = null;
+                    }
+                    elseif ((string)(int) $rowValue == $rowValue) {
+                        $rowValue = (int) $rowValue;
+                    }
+                }
+
+                unset($rowValue);
+
+                $line = array_combine($headers, array_pad($rowValues, $limit, null));
+                $table[$year][$rowHeader][] = $line;
             }
-        }
 
-        $limit = count($headers);
-
-        foreach ($values as $line) {
-            $rowHeader = strstr($line.' ', ' ', true);
-            $rowValues = substr(strstr($line, ' '), 1);
-            $rowValues = preg_split('/ /', $rowValues, $limit);
-
-            $line = array_combine($headers, array_pad($rowValues, $limit, null));
-            $table[$year][$rowHeader][] = $line;
-        }
-
-        unset($line);
+            unset($line);
 
         }
 

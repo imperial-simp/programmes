@@ -68,6 +68,7 @@ class PdfLoader extends AbstractLoader
             '/\( /' => '(',
             '/-\n/' => '-',
             '%(?<!http://)www\.%s' => 'http://www.',
+            '%https://http://%s' => 'https://',
         ];
 
         $text = preg_replace(array_keys($replacements), array_values($replacements), $text);

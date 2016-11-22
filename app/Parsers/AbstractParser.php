@@ -16,6 +16,8 @@ abstract class AbstractParser
     protected $errors = [];
     protected $rawText;
 
+    public $debug = false;
+
     public function __construct(Specification $specification, $text, array $details, array $links)
     {
         $this->specification = $specification;
@@ -124,6 +126,7 @@ abstract class AbstractParser
 
         $title = \Illuminate\Support\Str::ascii($title);
         $title = preg_replace('![^\pL\pN\s]+!u', '', $title);
+        if (is_array($title)) dd($title);
         $title = ucwords($title);
         $title = preg_replace('![\s]+!u', '_', $title);
 
@@ -145,7 +148,7 @@ abstract class AbstractParser
 
     protected function splitOr($text)
     {
-        $text = preg_split('@(\s*\b(?:or|and)\b\s*|/|&)@', $text);
+        $text = preg_split('@(\s*(?:\b(?:or|and)\b|[/&])\s*|,\s*)@', $text);
 
         if (count($text) == 1) {
             $text = head($text);

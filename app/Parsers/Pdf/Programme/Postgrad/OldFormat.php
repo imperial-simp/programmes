@@ -37,7 +37,7 @@ class OldFormat extends BaseParser
     {
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s+
-        (?<Title>[^%]{5,100}?)\s+
+        (?<Title>(?:[^%]{5,100}?)|IDX)\s
         (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s+
         (?<Various_All>Various|Variable)\s+
         (?<FHEQ>\d)\s+
@@ -49,7 +49,7 @@ class OldFormat extends BaseParser
     {
         return '^
         (?<Code>(?:[A-Z]{3,}\s[0-9]{3,}|[^\s]+))\s+
-        (?<Title>[^%]{5,100}?)\s+
+        (?<Title>(?:[^%]{5,100}?)|IDX)\s
         (?<Elective>CORE\**|ELECTIVE(?:\s\([^)]+\))|ELECTIVE\**)\s+
         (?:(?<Learning_Hours>[\d.]+)\s+
         (?<Indiv_Study_Hours>[\d.]+)\s+

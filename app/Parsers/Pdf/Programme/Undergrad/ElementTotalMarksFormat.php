@@ -30,8 +30,11 @@ class ElementTotalMarksFormat extends BaseParser
 
     protected function readModuleElementTotalMarksWeightingSection(array $lines = [])
     {
-        throw new \Exception('"Module Element Total Marks Weighting" not implemented yet.');
-        return $this->readModuleWeightingSection($lines);
+        $this->reportUnknown('Module_Element_Total_Marks_Weighting', $lines);
+
+        // return $this->readModuleWeightingSection($lines);
+
+        return []; //TODO
     }
 
     public function getModuleWeightingYearRegex()

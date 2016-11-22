@@ -239,7 +239,7 @@ abstract class AbstractPdfParser extends BaseParser
             'Year % Year Weighting Total Marks Available Module Total Marks Available' => 'Module Total Marks Weighting',
             'Year % Year Weighting Module % Module Weighting' => 'Module Weighting',
             'Module % Module Weighting' => 'Module Weighting',
-            '^(?:.*) with Science Education Teacher Training Placements$' => 'Teacher Training Placement Timing',
+            '^(?:.*) with Science Education Teacher Training Placements\s*$' => 'Teacher Training Placement Timing',
             'The (?:programme \' s )?competency standards .* at:' => 'Competency Standards',
             '(?:Re-sit Policy )?The College\'s Policy on Re-sits is a v a i l a b l e at:' => 'Resit Policy',
             '\bE L E C T I V E\b' => 'ELECTIVE',

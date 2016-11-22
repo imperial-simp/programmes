@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Imperial\Simp\Loaders\PdfLoader;
 // use Imperial\Simp\Loaders\HtmlLoader;
 
+use Storage;
 use Exception;
 
 class Specification extends Model
@@ -131,14 +132,21 @@ class Specification extends Model
         //     }
         // } //FIXME Need to be able to force recheck of parser.
 
+        if (Storage::has('specs/txt/'.$this->file.'.txt')) {
+            $text = Storage::get('specs/txt/'.$this->file.'.txt'); // Force reload of text?
+        }
+        else {
+            $text = $loader->getText();
+        }
+
         $parsers = $loader->parsers();
 
         foreach ($parsers as $parser) {
             if (class_exists($parser)) {
-                if ($parser::identify($loader->getText(), $loader->getDetails())) {
+                if ($parser::identify($text, $loader->getDetails())) {
                     $this->parser = $parser;
                     $this->save();
-                    return new $parser($this, $loader->getText(), $loader->getDetails(), $loader->getLinks());
+                    return new $parser($this, $text, $loader->getDetails(), $loader->getLinks());
                 }
             }
         }
