@@ -50,7 +50,7 @@ class NewFormat extends BaseParser
     {
         return [
             'Programme Component ECTS % Weighting',
-            'Marking Scheme',
+            ['Marking Scheme', 'Rules of Progression', 'Rules for Progression'],
         ];
     }
 

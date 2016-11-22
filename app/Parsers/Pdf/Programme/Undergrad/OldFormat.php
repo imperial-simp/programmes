@@ -133,7 +133,8 @@ class OldFormat extends BaseParser
     public function getAssessmentStructureHeadings(array $lines = [])
     {
         return [
-            ['Marking Scheme', 'Rules for Progression'],
+            ['Marking Scheme', 'Rules (or|for) Progression'],
+            'Detailed Programme Structure'
         ];
     }
 
@@ -225,19 +226,27 @@ class OldFormat extends BaseParser
         $lines = preg_replace('/\n *(\w+) *\n/m', ' $1 ', $lines);
         $lines = preg_replace('/\n *(ELECTIVE|CORE)/m', ' $1', $lines);
         $lines = preg_replace('/^ *([A-Z0-9-]+) *\n/mi', '$1 ', $lines);
-        $lines = str_replace(['Module Table Header', 'Indicative Module List', 'Module List', ], '', $lines);
+        $lines = str_replace(['Module Table Header', 'Indicative Module List', 'Module List'], '', $lines);
 
         $lines = explode(PHP_EOL, $lines);
 
+        $pathway = null;
+
         foreach ($lines as $i => &$line) {
-            if (isset($lines[$i+1]) && !preg_match($this->getModuleFiguresRegex(), $line) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
+            if (preg_match('/\((.*)Pathways?\)/', $line, $match)) {
+                $pathway = trim($match[1]);
+                $line = null;
+            }
+            elseif (isset($lines[$i+1]) && !preg_match($this->getModuleFiguresRegex(), $line) && !$this->readModule($line) && $module = $this->readModule($line.PHP_EOL.$lines[$i+1])) {
+                if ($pathway) $module['Pathway'] = $pathway;
                 $modules[] = $module;
                 $lines[$i+1] = null;
             }
             elseif ($module = $this->readModule($line)) {
+                if ($pathway) $module['Pathway'] = $pathway;
                 $modules[] = $module;
             } else {
-                $unknown[] = $line;
+                if ($line) $unknown[] = $line;
             }
         }
 

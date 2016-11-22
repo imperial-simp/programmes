@@ -126,7 +126,7 @@ abstract class AbstractParser
 
         $title = \Illuminate\Support\Str::ascii($title);
         $title = preg_replace('![^\pL\pN\s]+!u', '', $title);
-        if (is_array($title)) dd($title);
+        if (is_array($title)) $title = head($title);
         $title = ucwords($title);
         $title = preg_replace('![\s]+!u', '_', $title);
 

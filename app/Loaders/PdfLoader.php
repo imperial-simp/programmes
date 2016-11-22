@@ -95,7 +95,7 @@ class PdfLoader extends AbstractLoader
                         'ElementTotalMarksFormat',
                         'TotalMarksFormat',
                         'BscLfsFormat',
-                        'BEngBiomedFormat',
+                        'BiomedFormat',
                         'StreamsOldFormat',
                         'TeacherTrainingOldFormat',
                         'OldFormat',
