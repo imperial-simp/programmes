@@ -3,13 +3,14 @@
 namespace Imperial\Simp\Loaders;
 
 use Smalot\PdfParser\Document as PdfDocument;
+use Storage;
 
 class PdfLoader extends AbstractLoader
 {
 
     public function loadPath($path)
     {
-        $this->path = storage_path('app/'.$path);
+        $this->path = Storage::disk('specs')->url($path);
         $pdf = app('parser.pdf')->parseFile($this->path);
         $this->setDetails($pdf->getDetails());
         $this->setText($this->tidyText($pdf->getText()));

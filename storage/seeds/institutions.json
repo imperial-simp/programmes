@@ -38,7 +38,7 @@
                     {
                         "name": "Dyson School of Design Engineering",
                         "short_name": "Design Engineering",
-                        "oss_code": "DE",
+                        "oss_code": "DSDE",
                         "abbrev": "DSDE"
                     },
                     {
@@ -72,25 +72,35 @@
                     {
                         "name": "Department of Medicine",
                         "short_name": "Medicine",
-                        "abbrev": "DOM"
+                        "abbrev": "DOM",
+                        "oss_code": "WM"
                     },
                     {
                         "name": "Department of Surgery and Cancer",
                         "short_name": "Surgery and Cancer",
-                        "abbrev": "DSC"
+                        "abbrev": "DSC",
+                        "oss_code": "WS"
                     },
                     {
                         "name": "National Heart and Lung Institute",
-                        "abbrev": "NHLI"
+                        "abbrev": "NHLI",
+                        "oss_code": "WH"
                     },
                     {
                         "name": "Lee Kong Chian School of Medicine",
                         "short_name": "School of Medicine",
-                        "abbrev": "LKCSM"
+                        "abbrev": "LKCSM",
+                        "oss_code": "SM"
                     },
                     {
                         "name": "School of Public Health",
-                        "abbrev": "SPH"
+                        "short_name": "Public Health",
+                        "abbrev": "SPH",
+                        "oss_code": "WP"
+                    },
+                    {
+                        "name": "Institute of Clinical Sciences",
+                        "oss_code": "WC"
                     }
                 ]
             },
@@ -102,7 +112,9 @@
                 "departments": [
                     {
                         "name": "Centre for Environmental Policy",
-                        "oss_code": "CEP"
+                        "short_name": "Environmental Policy",
+                        "abbrev": "CEP",
+                        "oss_code": "EP"
                     },
                     {
                         "name": "Department of Chemistry",
@@ -135,7 +147,8 @@
                     {
                         "name": "Imperial College Business School",
                         "short_name": "Business",
-                        "abbrev": "ICBS"
+                        "abbrev": "ICBS",
+                        "oss_code": "ICBS"
                     }
                 ]
             },
@@ -145,11 +158,13 @@
                 "departments": [
                     {
                         "name": "Centre for Languages, Culture and Communication",
+                        "short_name": "Languages, Culture and Communication",
                         "abbrev": "CLCC"
                     },
                     {
                         "name": "Education Development Unit",
-                        "abbrev": "EDU"
+                        "abbrev": "EDU",
+                        "oss_code": "EQ"
                     },
                     {
                         "name": "Science Communication Unit",

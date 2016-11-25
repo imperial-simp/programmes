@@ -33,11 +33,12 @@ class PdfParserJob implements ShouldQueue
      */
     public function handle()
     {
-        if (!Storage::exists('specs/pdf/'.$this->path)) {
+        if (!Storage::disk('specs')->exists('pdf/'.$this->path)) {
             throw new RuntimeException(sprintf('PDF file "%s" does not exist.', $this->path));
         }
 
-        $path = base_path(Storage::url('app/specs/pdf/'.$this->path));
+        // $path = base_path(Storage::url('app/specs/pdf/'.$this->path)); //FIXME
+        $path = Storage::disk('specs')->url('pdf/'.$this->path); //FIXME
 
         $pdf = app('parser.pdf')->parseFile($path);
 
@@ -83,7 +84,7 @@ class PdfParserJob implements ShouldQueue
             $text = preg_replace('#'.str_replace(' ', '\s*', $headerFind).'#m', $headerReplace, $text);
         }
 
-        Storage::put('specs/txt/'.File::name($path).'_'.$hash.'.txt', $text);
+        Storage::disk('specs')->put('txt/'.File::name($path).'_'.$hash.'.txt', $text);
 
         $definitions = [
             'Programme Specification (Undergraduate)' => [
@@ -167,7 +168,7 @@ class PdfParserJob implements ShouldQueue
 
         $sections['Document_Details'] = $details;
 
-        Storage::put('specs/json/'.File::name($path).'_'.$hash.'.json', json_encode($sections, JSON_PRETTY_PRINT));
+        Storage::disk('specs')->put('json/'.File::name($path).'_'.$hash.'.json', json_encode($sections, JSON_PRETTY_PRINT));
 
     }
 

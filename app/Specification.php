@@ -50,7 +50,7 @@ class Specification extends Model
 
     public function getPathAttribute()
     {
-        return 'specs/'.$this->extension.'/'.$this->file;
+        return $this->extension.'/'.$this->file; //FIXME
     }
 
     public function getExtensionAttribute()
@@ -132,8 +132,8 @@ class Specification extends Model
         //     }
         // } //FIXME Need to be able to force recheck of parser.
 
-        if (Storage::has('specs/txt/'.$this->file.'.txt')) {
-            $text = Storage::get('specs/txt/'.$this->file.'.txt'); // Force reload of text?
+        if (Storage::disk('specs')->has('txt/'.$this->file.'.txt')) {
+            $text = Storage::disk('specs')->get('txt/'.$this->file.'.txt'); // Force reload of text?
         }
         else {
             $text = $loader->getText();
@@ -155,5 +155,13 @@ class Specification extends Model
         $this->save();
 
         throw new Exception(sprintf('Cannot identify parser for specification [%s].', $this->id));
+    }
+
+    public function newPivot(Model $parent, array $attributes, $table, $exists)
+    {
+        if ($parent instanceof Module) {
+            return new ModuleSpecification($parent, $attributes, $table, $exists);
+        }
+        return parent::newPivot($parent, $attributes, $table, $exists);
     }
 }

@@ -45,6 +45,11 @@
         "type": "MD"
     },
     {
+        "abbrev": "MPhil",
+        "name": "Master of Philosophy",
+        "type": "MD"
+    },
+    {
         "abbrev": "MSc",
         "name": "Master of Science",
         "type": "MD"
@@ -68,5 +73,20 @@
         "abbrev": "PGDip",
         "name": "Postgraduate Diploma",
         "type": "PD"
+    },
+    {
+        "abbrev": "CDT",
+        "name": "Centre for Doctoral Training",
+        "type": "DR"
+    },
+    {
+        "abbrev": "EngD",
+        "name": "Engineering Doctorate",
+        "type": "DR"
+    },
+    {
+        "abbrev": "DSc",
+        "name": "Doctor of Science",
+        "type": "DR"
     }
 ]

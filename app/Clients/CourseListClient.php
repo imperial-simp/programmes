@@ -147,7 +147,7 @@ class CourseListClient extends AbstractClient
                     $url = $node->filter('a[href]')->first()->link()->getUri();
 
                     $specification->url = $url;
-                    $specification->file = str_slug($title).'_'.$hash.'.html';
+                    $specification->file = substr(str_slug($title), 0, 30).'_'.$hash.'.html';
                 }
                 catch (InvalidArgumentException $e) { }
             }

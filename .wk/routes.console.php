@@ -109,7 +109,7 @@ Artisan::command('specs:retrieve', function () {
 
     });
 
-    Storage::put('specs/list_'.date('Ymd').'.json', json_encode($programmes, JSON_PRETTY_PRINT));
+    Storage::disk('specs')->put('list_'.date('Ymd').'.json', json_encode($programmes, JSON_PRETTY_PRINT));
 
 });
 

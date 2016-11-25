@@ -27,4 +27,14 @@ trait SearchNamesTrait
             ->orWhereIn('banner_code', $names);
         });
     }
+
+    public function scopeWhereCodes($query, $names)
+    {
+        $names = (array) $names;
+
+        return $query->where(function($query) use ($names) {
+            return $query->whereIn('oss_code', $names)
+            ->orWhereIn('banner_code', $names);
+        });
+    }
 }

@@ -43,7 +43,7 @@ class DownloadSpecificationJob implements ShouldQueue
         $mime = strstr(head($request->getHeader('Content-Type')), ';', true);
         $etag = head($request->getHeader('ETag'));
 
-        Storage::put($this->specification->path, $contents);
+        Storage::disk('specs')->put($this->specification->path, $contents);
 
         $this->specification->retrieve($mime, $etag);
     }

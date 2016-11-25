@@ -37,9 +37,9 @@ class ParseSpecificationJob implements ShouldQueue
 
         $contents = json_encode($this->specification->contents, JSON_PRETTY_PRINT);
 
-        Storage::put('specs/json/'.$this->specification->file.'.json', $contents);
+        Storage::disk('specs')->put('json/'.$this->specification->file.'.json', $contents);
 
-        Storage::put('specs/txt/'.$this->specification->file.'.txt', $parser->getRawText());
+        Storage::disk('specs')->put('txt/'.$this->specification->file.'.txt', $parser->getRawText());
 
         if (count($parser->getErrors())) {
             echo 'The following warnings were encountered when attempting to parse the file'.PHP_EOL;

@@ -1,0 +1,34 @@
+[
+    {
+        "oss_code": "PGRM",
+        "name": "Postgraduate Master of Research"
+    },
+    {
+        "oss_code": "PGR",
+        "name": "Postgraduate Research"
+    },
+    {
+        "oss_code": "PGRO",
+        "name": "Postgraduate Research Occasional Programme"
+    },
+    {
+        "oss_code": "PGTC",
+        "name": "Postgraduate Taught Certificate"
+    },
+    {
+        "oss_code": "PGTD",
+        "name": "Postgraduate Taught Degree"
+    },
+    {
+        "oss_code": "PGTO",
+        "name": "Postgraduate Taught Occasional Programme"
+    },
+    {
+        "oss_code": "UGO",
+        "name": "Undergraduate Occasional Programme"
+    },
+    {
+        "oss_code": "UG",
+        "name": "Undergraduate Programme"
+    }
+]

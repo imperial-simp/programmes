@@ -14,7 +14,6 @@ class AwardTypesTableSeeder extends AbstractJsonTableSeeder
         $award_types = $this->data('award_types');
 
         foreach ($award_types as $award_type) {
-
             $awardTypeModel = AwardType::updateOrCreate([
                 'name' => $award_type['name'],
             ], $award_type);

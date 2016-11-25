@@ -22,8 +22,8 @@ class CreateSpecificationsTable extends Migration
             $table->string('hash')->unique();
             $table->string('etag')->nullable();
             $table->string('parser')->nullable();
-            $table->text('details')->nullable();
-            $table->text('contents')->nullable();
+            $table->json('details')->nullable();
+            $table->json('contents')->nullable();
             $table->timestamp('retrieved_at')->nullable();
             $table->timestamp('parsed_at')->nullable();
             $table->unsignedInteger('source_id')->nullable();

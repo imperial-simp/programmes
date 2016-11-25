@@ -53,6 +53,12 @@ return [
             'root' => storage_path('seeds'),
         ],
 
+        'specs' => [
+            'driver' => 'local',
+            'root' => '/home/vagrant/onedrive/SIMP/Academic Model/Specs',
+            'url' => '/home/vagrant/onedrive/SIMP/Academic Model/Specs',
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

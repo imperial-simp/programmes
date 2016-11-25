@@ -134,7 +134,7 @@ class OldFormat extends BaseParser
     {
         return [
             ['Marking Scheme', 'Rules (or|for) Progression'],
-            'Detailed Programme Structure'
+            // 'Detailed Programme Structure'
         ];
     }
 
@@ -450,9 +450,9 @@ class OldFormat extends BaseParser
         elseif (preg_match('/ELECTIVE \((.+)\)/', $fields['Elective'], $match)) {
             $fields['Elective_Group'] = $this->splitOr($match[1]);
 
-            if (is_string($fields['Elective_Group']) && strlen($fields['Elective_Group']) > 1 && preg_match('/^[A-G]+$/', $fields['Elective_Group'])) {
-                $fields['Elective_Group'] = str_split($fields['Elective_Group']);
-            }
+            // if (is_string($fields['Elective_Group']) && strlen($fields['Elective_Group']) > 1 && preg_match('/^[A-G]+$/', $fields['Elective_Group'])) {
+            //     $fields['Elective_Group'] = str_split($fields['Elective_Group']); // Two-char group name is a single group
+            // }
 
             $fields['Elective'] = true;
             $fields['Core'] = false;
