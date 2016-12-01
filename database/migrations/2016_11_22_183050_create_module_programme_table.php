@@ -19,8 +19,8 @@ class CreateModuleProgrammeTable extends Migration
             $table->integer('module_id')->unsigned()->nullable();
             $table->timestamps();
 
-            $table->foreign('programme_id')->references('id')->on('programmes');
-            $table->foreign('module_id')->references('id')->on('modules');
+            $table->foreign('programme_id')->references('id')->on('programmes')->onDelete('cascade');
+            $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
         });
     }
 

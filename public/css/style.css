@@ -1,0 +1,7 @@
+textarea {
+    resize: vertical;
+    max-height: 300px;
+}
+.show-help {
+    display: none;
+}

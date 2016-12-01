@@ -91,7 +91,7 @@ class ProgrammesTableSeeder extends Seeder
         if (isset($specification->contents['Specification']['Indicative_Module_List'])) {
             foreach ($specification->contents['Specification']['Indicative_Module_List']['Modules'] as $module) {
 
-                if (@$module['Code']) {
+                if (@$module['Code'] && $module['Code'] != 'N/A') {
                     if (is_array($module['Code'])) {
                         foreach ($module['Code'] as $code) {
                             $moduleModel = $this->makeModule($specification, $programme, $code, $module['Title'], $module);
@@ -119,23 +119,23 @@ class ProgrammesTableSeeder extends Seeder
 
         $module->specifications()->syncWithoutDetaching([
             $specification->getKey() => [
-                'ects'              => @$contents['ECTS'],
-                'fheq'              => @$contents['FHEQ'],
-                'learning_hours'    => @$contents['Learning_Hours'],
-                'study_hours'       => @$contents['Study_Hours'],
-                'placement_hours'   => @$contents['Placement_Hours'],
-                'total_hours'       => @$contents['Total_Hours'],
-                'exam_weight'       => @$contents['Written_Exam'],
-                'coursework_weight' => @$contents['Coursework'],
-                'practical_weight'  => @$contents['Practical'],
+                'ects'              => 0 + str_replace('(various)', -1, @$contents['ECTS']),
+                'fheq'              => 0 + str_replace('(various)', -1, @$contents['FHEQ']),
+                'learning_hours'    => 0 + str_replace('(various)', -1, @$contents['Learning_Hours']),
+                'study_hours'       => 0 + str_replace('(various)', -1, @$contents['Study_Hours']),
+                'placement_hours'   => 0 + str_replace('(various)', -1, @$contents['Placement_Hours']),
+                'total_hours'       => 0 + str_replace('(various)', -1, @$contents['Total_Hours']),
+                'exam_weight'       => 0 + bcdiv(str_replace('%', '', @$contents['Written_Exam']), 100),
+                'coursework_weight' => 0 + bcdiv(str_replace('%', '', @$contents['Coursework']), 100),
+                'practical_weight'  => 0 + bcdiv(str_replace('%', '', @$contents['Practical']), 100),
             ]
         ]);
-        
+
         $module->programmes()->syncWithoutDetaching([
             $programme->getKey() => [
-                'years'          => @$contents['Year'],
+                'years'          => json_encode(@$contents['Year']),
                 'core'           => @$contents['Core'] ?: false,
-                'elective_group' => @$contents['Elective_Group'] ?: null,
+                'elective_group' => @$contents['Elective_Group'] ? json_encode(@$contents['Elective_Group']) : null,
             ]
         ]);
 

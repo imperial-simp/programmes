@@ -19,8 +19,8 @@ class CreateModuleSpecificationTable extends Migration
             $table->integer('module_id')->unsigned()->nullable();
             $table->timestamps();
 
-            $table->foreign('specification_id')->references('id')->on('specifications');
-            $table->foreign('module_id')->references('id')->on('modules');
+            $table->foreign('specification_id')->references('id')->on('specifications')->onDelete('cascade');
+            $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
         });
     }
 

@@ -19,8 +19,8 @@ class CreateProgrammeDepartmentTable extends Migration
             $table->integer('programme_id')->unsigned()->nullable();
             $table->timestamps();
 
-            $table->foreign('department_id')->references('id')->on('departments');
-            $table->foreign('programme_id')->references('id')->on('programmes');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
+            $table->foreign('programme_id')->references('id')->on('programmes')->onDelete('cascade');
         });
     }
 

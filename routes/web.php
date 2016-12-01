@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/modules/edit', function () {
+    return view('modules.form');
+});

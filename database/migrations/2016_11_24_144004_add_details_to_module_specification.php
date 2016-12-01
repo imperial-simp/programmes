@@ -18,8 +18,8 @@ class AddDetailsToModuleSpecification extends Migration
             $table->decimal('fheq', 5, 2)->nullable();
             $table->decimal('learning_hours', 5, 2)->nullable();
             $table->decimal('study_hours', 5, 2)->nullable();
-            $table->decimal('placement_hours', 5, 2)->nullable();
-            $table->decimal('total_hours', 5, 2)->nullable();
+            $table->decimal('placement_hours', 6, 2)->nullable();
+            $table->decimal('total_hours', 6, 2)->nullable();
             $table->decimal('exam_weight', 3, 2)->nullable();
             $table->decimal('coursework_weight', 3, 2)->nullable();
             $table->decimal('practical_weight', 3, 2)->nullable();
